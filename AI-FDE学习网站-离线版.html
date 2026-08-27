@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="不依赖 GPT、登录或服务器的 AI FDE 90 天系统训练与 14 天面试冲刺。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>AI FDE 系统训练 · 独立静态版</title>
+  <style>:root { --side: 310px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #f3f0e7; color: #18322b; font-family: Arial, Helvetica, sans-serif; }
+button, input, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+.app { --ink:#18322b; --paper:#f5f2e9; --deep:#ebe7dc; --light:#fbf9f3; --green:#286b5d; --green-dark:#123a31; --line:#d8d2c4; --muted:#6d766f; --gold:#cf9835; min-height:100vh; display:grid; grid-template-columns:var(--side) minmax(0,1fr); background:var(--paper); color:var(--ink); }
+.app[data-theme="dark"] { --ink:#e7ece7; --paper:#101a17; --deep:#18241f; --light:#15201c; --green:#79bba9; --green-dark:#092b25; --line:#314039; --muted:#a0aca6; --gold:#e2b45c; }
+.reading-line { position:fixed; inset:0 auto auto var(--side); z-index:30; height:3px; width:0; background:var(--gold); }
+.sidebar { position:sticky; top:0; z-index:20; height:100vh; overflow:auto; padding:30px 22px; background:var(--green-dark); color:#f5f2e9; scrollbar-width:thin; }
+.sidebar-head { display:flex; align-items:flex-start; justify-content:space-between; }
+.brand { width:46px; height:46px; display:grid; place-items:center; margin-bottom:28px; border:1px solid #78aa97; border-radius:50%; font-size:11px; font-weight:800; letter-spacing:.1em; }
+.sidebar-head button { display:none; border:0; background:transparent; color:#c5d7cf; font-size:28px; }
+.eyebrow { margin:0 0 9px; color:#9cc2b1; font-size:9px; font-weight:800; letter-spacing:.16em; }
+.sidebar h1 { margin:0; font:500 29px/1.08 Georgia,"Times New Roman",serif; }
+.sidebar-copy { margin:11px 0 22px; color:#afc5bc; font-size:12px; }
+.course-switches { display:grid; gap:7px; margin-bottom:19px; }
+.course-switches button { padding:10px 12px; border:1px solid rgba(190,220,207,.2); border-radius:6px; background:rgba(255,255,255,.035); color:#d8e7e0; text-align:left; font-size:11px; cursor:pointer; }
+.course-switches button.active { border-color:var(--gold); color:#fff; background:rgba(255,255,255,.09); }
+.side-progress { display:grid; grid-template-columns:1fr auto; gap:8px; margin-bottom:27px; padding:14px; border:1px solid rgba(190,220,207,.18); border-radius:8px; color:#aac0b7; font-size:9px; }
+.side-progress b { color:#fff; font-size:10px; }
+.side-progress i { grid-column:1/-1; height:3px; overflow:hidden; background:#294d41; }
+.side-progress em { display:block; width:0; height:100%; background:var(--gold); transition:width .2s; }
+.nav-group { margin:0 0 21px; }
+.nav-group > b { display:block; margin:0 8px 8px; color:#8caf9f; font-size:9px; letter-spacing:.1em; }
+.nav-group button { width:100%; overflow:hidden; padding:7px 8px; border:0; border-radius:5px; background:transparent; color:#bfd0c9; text-align:left; text-overflow:ellipsis; white-space:nowrap; font-size:11px; cursor:pointer; }
+.nav-group button:hover { background:#245344; color:#fff; }
+.nav-group button.done { color:var(--gold); }
+.sidebar-foot { margin:28px 6px 0; padding-top:17px; border-top:1px solid rgba(190,220,207,.15); color:#79988b; font-size:9px; line-height:1.65; }
+.main { min-width:0; }
+.toolbar { position:sticky; top:0; z-index:10; min-height:72px; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px clamp(20px,4vw,60px); border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--paper) 94%,transparent); backdrop-filter:blur(12px); }
+.search { position:relative; width:min(390px,42vw); }
+.search > span { position:absolute; left:13px; top:9px; color:var(--muted); font-size:18px; }
+.search input { width:100%; height:39px; padding:0 72px 0 38px; border:1px solid var(--line); border-radius:7px; outline:0; background:var(--light); color:var(--ink); font-size:12px; }
+.search input:focus { border-color:var(--green); }
+.search small { position:absolute; right:10px; top:13px; color:var(--muted); font-size:9px; }
+.toolbar-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; }
+.toolbar-actions button, .toolbar-actions a { padding:8px 9px; border:1px solid var(--line); border-radius:5px; background:var(--light); color:var(--ink); font-size:9px; font-weight:700; text-decoration:none; cursor:pointer; }
+.toolbar-actions .download { border-color:var(--green); color:var(--green); }
+.notice { margin:18px auto 0; width:min(1040px,calc(100% - 40px)); padding:12px 14px; border-left:4px solid #b36c50; background:#f8e9df; color:#6b3e30; font-size:11px; }
+.status { position:fixed; right:20px; bottom:20px; z-index:40; max-width:340px; padding:10px 13px; border-radius:6px; background:var(--green-dark); color:#fff; font-size:10px; opacity:0; pointer-events:none; transition:opacity .2s; }
+.status.show { opacity:1; }
+.content { width:min(1040px,calc(100% - clamp(44px,8vw,120px))); margin:0 auto; padding:68px 0 100px; }
+.hero { padding:0 0 76px; border-bottom:1px solid var(--line); }
+.hero::before { content:""; display:block; width:52px; height:4px; margin-bottom:36px; background:var(--gold); }
+.hero .kicker, .section-kicker { margin:0 0 8px; color:var(--green); font-size:9px; font-weight:800; letter-spacing:.17em; }
+.hero h1 { max-width:900px; margin:0 0 25px; font:500 clamp(47px,6vw,76px)/1.02 Georgia,"Times New Roman",serif; letter-spacing:-.045em; }
+.hero > p { max-width:820px; margin:0; color:var(--muted); font:17px/1.75 Georgia,"Times New Roman",serif; }
+.hero-meta { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; margin-top:40px; border:1px solid var(--line); background:var(--line); }
+.hero-meta div { padding:20px; background:var(--light); }
+.hero-meta b { display:block; font:500 27px/1 Georgia,"Times New Roman",serif; }
+.hero-meta span { color:var(--muted); font-size:10px; }
+.intro-card { margin:58px 0; padding:28px; border:1px solid var(--line); border-left:5px solid var(--green); background:color-mix(in srgb,var(--green) 7%,var(--light)); }
+.intro-card.gold { border-left-color:var(--gold); background:color-mix(in srgb,var(--gold) 7%,var(--light)); }
+.intro-card h2 { margin:7px 0 13px; font:500 29px/1.23 Georgia,"Times New Roman",serif; }
+.intro-card > p { margin:0; color:var(--muted); font-size:13px; line-height:1.75; }
+.mini-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:20px; }
+.mini-grid article { min-height:120px; padding:16px; border:1px solid var(--line); border-radius:6px; background:var(--light); }
+.mini-grid b { display:block; color:var(--green); font-size:11px; }
+.mini-grid p { margin:27px 0 0; color:var(--muted); font-size:10px; line-height:1.55; }
+.framework { margin:82px 0; }
+.framework h2 { margin:7px 0 24px; padding-bottom:16px; border-bottom:1px solid var(--line); font:500 38px/1.16 Georgia,"Times New Roman",serif; }
+.framework-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.framework-grid article { min-height:170px; padding:19px; border:1px solid var(--line); border-radius:7px; background:var(--light); }
+.framework-grid b { color:var(--gold); font:500 22px/1 Georgia,"Times New Roman",serif; }
+.framework-grid p { margin:42px 0 0; color:var(--muted); font-size:10px; line-height:1.6; }
+.step-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:1px; overflow:hidden; border:1px solid var(--line); border-radius:7px; background:var(--line); }
+.step-grid span { min-height:84px; display:flex; flex-direction:column; justify-content:space-between; padding:13px; background:var(--light); color:var(--muted); font-size:10px; }
+.step-grid b { color:var(--green); font-size:9px; }
+.week { margin:98px 0 0; scroll-margin-top:92px; }
+.week > header { padding:25px 28px; border-radius:8px 8px 0 0; background:var(--green-dark); color:#f3f1e9; }
+.week > header small { color:#9fc5b6; font-size:9px; font-weight:800; letter-spacing:.13em; }
+.week > header h2 { margin:8px 0; font:500 35px/1.15 Georgia,"Times New Roman",serif; }
+.week > header p { margin:0; color:#c3d6ce; font-size:12px; }
+.week-gate { display:grid; grid-template-columns:120px 1fr; gap:1px; border:1px solid var(--line); border-top:0; background:var(--line); }
+.week-gate b, .week-gate p { margin:0; padding:13px 15px; background:var(--light); font-size:10px; line-height:1.55; }
+.week-gate b { color:var(--green); }
+.week-gate p { color:var(--muted); }
+.day-card { padding:27px; border:1px solid var(--line); border-top:0; background:var(--light); scroll-margin-top:92px; }
+.day-card:nth-of-type(even) { background:color-mix(in srgb,var(--deep) 40%,var(--light)); }
+.day-title { display:flex; align-items:start; justify-content:space-between; gap:16px; margin-bottom:7px; }
+.day-title h3 { margin:0; font:500 23px/1.3 Georgia,"Times New Roman",serif; }
+.day-title > span { flex:0 0 auto; padding:5px 7px; border:1px solid var(--line); border-radius:4px; color:var(--green); font-size:9px; }
+.day-why { margin:0 0 18px; color:var(--muted); font-size:11px; line-height:1.6; }
+.details-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:7px; }
+details { overflow:hidden; border:1px solid var(--line); border-radius:6px; background:var(--light); }
+summary { min-height:57px; display:grid; grid-template-columns:27px 1fr 17px; gap:8px; align-items:center; padding:11px 13px; cursor:pointer; list-style:none; font-size:10px; font-weight:800; }
+summary::-webkit-details-marker { display:none; }
+summary .num { color:var(--gold); font:500 15px/1 Georgia,"Times New Roman",serif; }
+summary .plus { color:var(--green); font-size:16px; transition:transform .15s; }
+details[open] summary .plus { transform:rotate(45deg); }
+.detail-body { padding:15px; border-top:1px solid var(--line); }
+.detail-body p, .detail-body li { color:var(--muted); font-size:11px; line-height:1.68; }
+.detail-body ul, .detail-body ol { margin:0 0 13px; padding-left:19px; }
+.aside { margin-top:9px; padding:11px 12px; border-left:3px solid var(--green); background:var(--deep); color:var(--muted); font-size:10px; line-height:1.55; }
+.aside.failure { border-left-color:#b5654f; }
+.aside b { display:block; margin-bottom:4px; color:var(--ink); font-size:9px; }
+.materials { display:flex; flex-wrap:wrap; gap:5px; }
+.materials code { padding:4px 6px; border:1px solid var(--line); border-radius:4px; background:var(--deep); color:var(--green); font-size:9px; }
+.evidence { display:grid; gap:6px; color:var(--green); font-size:9px; font-weight:800; }
+.evidence textarea { width:100%; min-height:86px; resize:vertical; padding:9px; border:1px solid var(--line); border-radius:5px; background:var(--deep); color:var(--ink); font:10px/1.5 monospace; }
+.stage-row { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:11px; }
+.stage-row button, .task-toggle { padding:10px; border:1px solid var(--line); border-radius:5px; background:var(--deep); color:var(--ink); font-size:10px; font-weight:800; cursor:pointer; }
+.stage-row button.checked, .task-toggle.checked { border-color:var(--green); background:color-mix(in srgb,var(--green) 10%,var(--light)); color:var(--green); }
+.stage-row button:disabled { cursor:not-allowed; opacity:.48; }
+.task-toggle { margin-top:10px; color:var(--green); }
+.sprint-day { margin-top:20px; border-top:1px solid var(--line); }
+.sprint-day .details-grid { grid-template-columns:1fr; }
+.sprint-day .day-card { border-top:0; }
+.guide { margin:13px 0; padding:13px; border:1px solid var(--line); background:var(--deep); }
+.guide b { color:var(--green); font-size:9px; }
+.guide li { margin:5px 0; }
+.empty { padding:50px 0; color:var(--muted); text-align:center; }
+footer { display:grid; grid-template-columns:1fr 1fr auto; gap:20px; align-items:center; margin:0 auto; width:min(1040px,calc(100% - 50px)); padding:30px 0 50px; border-top:1px solid var(--line); color:var(--muted); font-size:9px; }
+footer p { margin:0; text-align:center; }
+footer button { border:0; background:transparent; color:var(--green); font-size:10px; font-weight:800; cursor:pointer; }
+.mobile-menu, .menu-scrim { display:none; }
+[hidden] { display:none !important; }
+@media (max-width:900px) { :root{--side:270px}.content{width:calc(100% - 50px)}.toolbar{align-items:flex-start}.toolbar-actions{max-width:52%}.framework-grid,.mini-grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:720px) {
+  .app{grid-template-columns:1fr}.reading-line{left:0}.sidebar{position:fixed; left:0; width:min(340px,88vw); transform:translateX(-105%); transition:transform .2s; box-shadow:16px 0 40px rgba(0,0,0,.3)}.sidebar.open{transform:none}.sidebar-head button{display:block}.mobile-menu{display:grid; place-items:center; position:fixed; left:13px; top:15px; z-index:15; width:39px; height:39px; border:1px solid var(--line); border-radius:50%; background:var(--light); color:var(--ink)}.menu-scrim.show{display:block; position:fixed; inset:0; z-index:14; border:0; background:rgba(6,18,14,.5)}.toolbar{padding:11px 12px 11px 62px; flex-direction:column}.search{width:100%}.toolbar-actions{max-width:none; justify-content:flex-start}.content{width:calc(100% - 32px); padding-top:48px}.hero h1{font-size:43px}.hero-meta,.framework-grid,.mini-grid,.step-grid,.details-grid,.stage-row{grid-template-columns:1fr}.week-gate{grid-template-columns:1fr}.week>header{padding:22px 18px}.day-card{padding:20px 14px}.intro-card{padding:22px 18px}footer{grid-template-columns:1fr;text-align:left}footer p{text-align:left}
+}
+@media print { .sidebar,.toolbar,.reading-line,.mobile-menu,.menu-scrim,.stage-row,.task-toggle,.notice,.status{display:none!important}.app{display:block;background:#fff;color:#172e28}.content,footer{width:100%;padding:0}.hero{page-break-after:always}.day-card,details{break-inside:avoid}details:not([open])>.detail-body{display:block!important}footer{margin-top:30px} }
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+  <div id="app" class="app" data-theme="light">
+    <div id="reading-line" class="reading-line"></div>
+    <button id="menu-open" class="mobile-menu" type="button" aria-label="打开目录">☰</button>
+    <button id="menu-scrim" class="menu-scrim" type="button" aria-label="关闭目录"></button>
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-head"><span id="brand" class="brand">90</span><button id="menu-close" type="button" aria-label="关闭目录">×</button></div>
+      <p class="eyebrow">INDEPENDENT STATIC EDITION</p>
+      <h1>AI FDE<br>学习工作台</h1>
+      <p class="sidebar-copy">零 GPT · 零登录 · 本地进度</p>
+      <div class="course-switches">
+        <button type="button" data-course="fde-90">90 天系统训练</button>
+        <button type="button" data-course="fde-14">14 天面试冲刺</button>
+      </div>
+      <div class="side-progress"><span id="progress-label">完成进度</span><b id="progress-value">0 / 90</b><i><em id="progress-bar"></em></i></div>
+      <nav id="day-nav" aria-label="课程目录"></nav>
+      <p class="sidebar-foot">页面不连接任何网络服务。<br>建议定期导出 JSON 备份进度。</p>
+    </aside>
+    <main class="main">
+      <header class="toolbar">
+        <label class="search"><span>⌕</span><input id="search" type="search" placeholder="搜索课程内容…" aria-label="搜索课程"><small id="search-count"></small></label>
+        <div class="toolbar-actions">
+          <button id="expand-all" type="button">全部展开</button>
+          <button id="theme" type="button" aria-label="切换主题">夜</button>
+          <button id="export-json" type="button">导出 JSON</button>
+          <button id="export-md" type="button">导出 MD</button>
+          <button id="import-trigger" type="button">导入</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+          <button id="print" type="button">打印</button>
+          <a class="download" href="./AI-FDE学习网站-离线版.html" download>下载离线版</a>
+        </div>
+      </header>
+      <div id="storage-warning" class="notice" hidden>当前浏览器没有提供稳定的本地存储；本次仍可使用，但请在关闭前导出 JSON。</div>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <article id="content" class="content"></article>
+      <footer><span>AI FDE · INDEPENDENT STATIC EDITION</span><p>讲全项目，讲准责任；先定义结果，再动手交付。</p><button id="back-top" type="button">返回顶部 ↑</button></footer>
+    </main>
+  </div>
+  <script>window.__FDE_DATA__={"generatedAt":"2026-08-27T06:20:12.814Z","fde90":{"days":[{"title":"FDE 是结果所有者，不是文档所有者","why":"先建立责任边界，避免把 FDE 学成售前、PM 或纯工程。","standard":"4C 是 Context、Code、Calibration、Compounding；结果必须同时可运行、可衡量、可采用、可复用。","practice":"用虚构客服主管场景写一张今日结果卡：用户、流程瓶颈、输出、正常/失败验收。","expected":"结果卡明确‘主管需要决策依据’，而不是笼统写‘做 Python 脚本’。","failure":"把输出写成‘完成脚本’时重写一次，直到指向用户决策。","transfer":"给 Job Agent 和华丰各标注当前最强、最弱的一个 4C 面。","gate":"能用 90 秒区分 FDE、售前、交付、PM、SWE 的最终责任。","day":1},{"title":"跑通 8 条虚构工单的最小闭环","why":"零基础先获得一次真实运行和验收体验。","standard":"固定答案：总工单 8、已解决 7、有效时长 5、平均 78.0 分钟、数据警告 2。","practice":"进入 FDE/00-最小案例，运行分析脚本并打开 output/report.md。","expected":"终端输出报告路径、5 条有效时长和 2 条警告；报告数字与固定答案一致。","failure":"删除 output/report.md 后复跑，确认系统能恢复生成。","transfer":"在 Job Agent 中只找一条‘输入→处理→输出’链，不要求今天改代码。","gate":"保存命令、终端末两行、报告路径和六项验收结果。","day":2},{"title":"看懂数据流，不背代码","why":"FDE 要能解释系统怎样产生结果，Vibe Coding 也不能跳过理解。","standard":"数据流为 tickets.csv→逐行读取→校验→统计→report.md；四个入口是 load_tickets、calculate_resolution_minutes、build_report、main。","practice":"逐个函数写输入、输出和调用方向，再手工抽查一条工单时长。","expected":"能指出函数边界，并人工算出至少一条记录与报告一致。","failure":"把一个函数名遮住，仅根据输入输出判断它负责哪一步。","transfer":"在 Job Agent 选一个页面，记录它提交的输入和最终显示的输出。","gate":"不看页面能画出最小案例数据流并说出两个坏数据去向。","day":3},{"title":"先写验收，再做 10 分钟改动","why":"避免让 AI 用‘代码写完了’代替结果验证。","standard":"高优先级工单占比应为 37.5%（3/8）；分子、分母和显示格式必须明确。","practice":"先记录预期值，再让 AI 协助增加高优先级占比，运行并核对。","expected":"报告新增 37.5%（3/8），原有 8/7/5/78.0/2 不退化。","failure":"故意把分母改成 resolved 数量，观察为什么会得到错误口径。","transfer":"给 Job Agent 写一个未来小改动的‘修改前验收值’，暂不执行。","gate":"保留修改位置、diff、运行结果和人工计算。","day":4},{"title":"故意失败一次：坏输入与可恢复性","why":"现场数据不会像 Demo 数据一样干净。","standard":"坏数据应被隔离、记录并允许其余数据继续处理；未知字段、空值和非法日期要有明确策略。","practice":"增加一条非法日期、一条缺失时间，再运行并核对警告；恢复原数据后复跑。","expected":"任务不中断，警告数按输入变化，恢复后基线回到固定答案。","failure":"临时移走输入文件，记录完整报错，再说明更友好的错误提示应是什么。","transfer":"列 Job Agent 的两个输入失败：空 JD、格式不稳定或证据缺失。","gate":"能说明止损、保留现场、恢复三步，不只会说‘重试’。","day":5},{"title":"十步闭环与相邻岗位边界","why":"知道一个小脚本在真实交付中只覆盖哪几步。","standard":"十步是场景选择、Discovery、技术定界、架构、原型、Eval、生产化、采用、产品化、商业扩展。","practice":"把工单案例贴到十步图上，标已做、假设和缺失。","expected":"明确当前只验证数据处理原型和人工校准，尚无生产采用。","failure":"把‘报告生成成功’误写成‘业务价值实现’，再指出缺少哪些证据。","transfer":"分别标 Job Agent 与华丰当前能支持到哪一步，不能把目标方案当现状。","gate":"能说出第 9/10 步为何是 FDE 与一次性外包的分水岭。","day":6},{"title":"第一次交付演示与八维基线","why":"用演示检验是否真正理解，而非完成文件数量。","standard":"八维评分必须绑定证据：基础工程、AI 应用、企业集成、Eval、Discovery、沟通、产品判断、端到端交付。","practice":"做 5 分钟演示：客户问题→运行→坏数据→改动→验收→4C；完成 1–4 级能力基线。","expected":"演示包含一次真实命令和一次失败路径，不以幻灯片替代运行。","failure":"让听众随机追问一个数字或函数；不知道时现场定位，不编答案。","transfer":"只给 Job Agent/华丰已有证据打分；无证据记 1，不用自我感觉加分。","gate":"交付周复盘：本周产物、可复现证据、三个问题和下周唯一目标。","day":7},{"title":"识别用户、买单者、系统 Owner 与阻碍者","why":"同一句客户诉求背后有不同角色和成功标准。","standard":"至少区分终端用户、业务负责人、买单者、数据/系统 Owner、IT/安全/合规和 Sponsor。","practice":"为虚构客服团队画 Stakeholder Map，并写每个角色最怕什么。","expected":"图中至少有 5 类角色、决策权、输入和潜在阻力。","failure":"加入一个‘使用者支持但 IT 反对’事件，说明下一步。","transfer":"迁移到华丰，只使用脱敏角色类型，不推断具体个人立场。","gate":"能解释谁使用、谁批准、谁能阻断和谁承担失败成本。","day":8},{"title":"画 As-Is，而不是直接画架构","why":"真实瓶颈通常藏在交接、等待和数据重录里。","standard":"As-Is 要包含角色、步骤、输入输出、系统、等待、返工、异常和决策点。","practice":"画客服工单从进入到关闭的现流程，标三个摩擦点。","expected":"流程图能让非技术人员指出哪里慢、贵、易错。","failure":"删掉一个关键系统访问权限，重画受影响路径。","transfer":"画 Job Agent 从看到 JD 到决定投递的现流程，暂不写解决方案。","gate":"10 分钟白板能讲清当前流程和最痛断点。","day":9},{"title":"事实、客户主张、假设与未知","why":"FDE 的判断必须知道自己依据什么。","standard":"事实有来源；主张由角色提出但未必为真；假设可验证；未知需要 Owner 和验证动作。","practice":"把一组虚构访谈记录分成四栏，并为每个未知写验证方式。","expected":"每一行有来源/提出者、状态和下一步。","failure":"客户说‘每天浪费两小时’时，不直接写成事实，先设计测量。","transfer":"用同一模板整理华丰：最新阶段事实与历史方案表述分开。","gate":"随机抽 5 条，90 秒内说清类别、来源和验证动作。","day":10},{"title":"成功指标、基线与失败成本","why":"没有基线就无法证明方案改变了业务。","standard":"指标分业务结果、系统质量、用户采用；每个指标需口径、基线、目标、数据源、Owner 和误读方式。","practice":"为客服助手写 AHT、引用正确率、采纳率三层指标卡。","expected":"三个指标分别对应业务、系统和采用，不能用模型分数冒充业务价值。","failure":"在没有历史基线时，只设计测量流程，不编目标提升百分比。","transfer":"为 Job Agent 写‘待验证用户价值’，为华丰写 Gate 0 测量建议。","gate":"能回答失败一次会造成什么、谁承担和何时必须人工接管。","day":11},{"title":"Scope：必须做、不做、依赖与停止条件","why":"客户原始愿望必须被切成可上线的最小业务闭环。","standard":"薄切片包含一个目标用户、一段闭环、数据、人工边界、Demo、验收和停止条件。","practice":"把‘自动回复所有客户’缩成‘带引用草稿→人工审核→反馈’。","expected":"明确不直接发送、不做全量 CRM、不训练模型，并写依赖。","failure":"客户临时要求自动发送时，用风险和验证顺序控制变更。","transfer":"给 Job Agent 写一个最小决策助手闭环；华丰只写当前建议，非已确认范围。","gate":"每个功能能映射到用户结果或验收，否则删除。","day":12},{"title":"公开 API、JSON 与 HTTP","why":"把外部数据接进系统是企业集成的最小形态。","standard":"请求包含方法、URL、参数和头；响应包含状态码、头和 JSON/文本；失败不能静默吞掉。","practice":"调用一个无需密钥的公开 API，保存原始响应和清洗结果。","expected":"能解释 2xx/4xx/5xx 的责任差异和重试边界。","failure":"模拟超时、非 JSON 或字段缺失，记录处理策略。","transfer":"在 Job Agent 找一个 API 客户端调用，标请求/响应/错误路径。","gate":"输出数据字典、请求证据和至少一个失败响应。","day":13},{"title":"SQLite 与可复现 Solution Brief v0","why":"把发现结果和最小技术证据合成一页共同确认材料。","standard":"Solution Brief 包含问题、角色/流程、事实/未知、Scope/非目标、指标、依赖、风险、下一步。","practice":"将公开 API 清洗结果写入 SQLite，并把数据流写入 Brief。","expected":"数据库表有主键与字段说明；另一人按 README 可复现。","failure":"插入重复主键或缺字段，说明拒绝、修复或隔离选择。","transfer":"为 Job Agent/华丰各写一段迁移备注，标真实、参考、方案和待验证。","gate":"客户回放 5 分钟：先确认理解，再提出薄切片，不用架构名词压人。","day":14},{"title":"终端、路径、Git 与安全工作区","why":"可复现和可回滚先于写功能。","standard":"每次改动前确认目录、分支、diff 和启动方式；密钥只进环境，不进仓库。","practice":"初始化练习项目，做一次小提交和一次可恢复的错误修改。","expected":"能用 diff/log 找到变化并撤回自己刚做的小改动。","failure":"从错误目录运行，识别路径问题而非反复重装。","transfer":"只读查看 Job Agent 的 README、入口和 Git 历史，不改用户未授权文件。","gate":"交付安全操作清单和第一个可描述的提交。","day":15},{"title":"从业务状态设计数据模型","why":"表结构应服务工作流，而不是照着页面堆字段。","standard":"工单至少有 ID、类别、优先级、状态、创建/解决时间；状态转换需有规则。","practice":"设计 SQLite schema 和状态转换表。","expected":"能回答主键、必填、枚举和时间字段为何这样定。","failure":"尝试非法状态转换，定义错误而不是自动纠正。","transfer":"对照 Job Agent 的一个 Domain 对象，标业务含义与存储字段。","gate":"schema、样例数据和状态矩阵可以人工复核。","day":16},{"title":"FastAPI 新增与查询","why":"先完成最小读写闭环。","standard":"路由只负责协议与校验，业务规则进 Service，持久化进 Storage。","practice":"实现新增工单、单条查询和列表接口。","expected":"新增后能查询到；重复 ID 和不存在记录返回明确状态码。","failure":"发送缺字段和错误类型，保存错误响应。","transfer":"定位 Job Agent 一条 routes.py→service.py→storage.py 调用方向。","gate":"API 测试覆盖成功、重复和不存在三条路径。","day":17},{"title":"状态更新与统计接口","why":"FDE 交付的不是 CRUD 数量，而是业务状态可控。","standard":"更新需校验允许转换；统计口径要固定分母和时间范围。","practice":"实现更新状态与类别/优先级/平均耗时统计。","expected":"统计与人工抽查一致，非法转换不写入数据库。","failure":"并发或重复提交同一更新，观察幂等问题。","transfer":"找 Job Agent 一个状态变化，写出前置条件与副作用。","gate":"保存状态矩阵、请求/响应和数据库抽查。","day":18},{"title":"错误、日志与环境变量","why":"现场排障需要可定位而不泄密。","standard":"日志记录请求/任务 ID、阶段、错误类型和耗时，不记录密钥或敏感正文。","practice":"为 API 增加结构化日志、配置检查和统一错误响应。","expected":"一次失败能从日志定位到请求和阶段。","failure":"移除必要配置，确认启动时快速失败并给明确提示。","transfer":"检查 Job Agent 的日志/配置入口，列两个安全边界。","gate":"错误演练记录包含触发、观察、根因、修复和恢复。","day":19},{"title":"自动化 API 测试","why":"回归证据比‘我点过一次’可靠。","standard":"测试覆盖正常、边界、错误和状态副作用；测试数量不是价值本身。","practice":"为四类接口写至少 8 个测试并实际运行。","expected":"测试全绿且能解释每个测试保护什么业务规则。","failure":"故意改坏一个期望，读失败后恢复。","transfer":"在 Job Agent 只选与本周链路相关的测试阅读，不背全量数字。","gate":"保留命令、退出码、失败截图/文本与恢复结果。","day":20},{"title":"API 周演示与 Scope 复核","why":"技术增量必须回到客户问题。","standard":"演示顺序：问题→Scope→正常路径→失败路径→日志/测试→仍未解决。","practice":"完成 8 分钟演示并让听众提出一个范围变更。","expected":"能说明哪些请求现在拒绝、延后或进入路线图。","failure":"模拟数据库只读或不可用，给有限服务/停止建议。","transfer":"比较工单 API 与 Job Agent 链路的共同分层和不同风险。","gate":"周 Gate 由可运行系统、测试、失败记录和 Scope 复核共同通过。","day":21},{"title":"给工单 API 加最小操作界面","why":"用户价值必须进入工作流，而非停在接口文档。","standard":"界面只覆盖核心闭环和错误反馈，不追求视觉功能堆叠。","practice":"实现列表、新增、更新状态和统计视图。","expected":"用户能完成一条工单闭环，错误输入有可理解提示。","failure":"后端返回 500 时，界面不能假装成功。","transfer":"观察 Job Agent 某页面的加载、提交、成功和失败状态。","gate":"保存一次完整操作录屏和错误状态截图。","day":22},{"title":"追踪页面→API→Service→Storage→页面","why":"代码可信度来自理解链路和影响范围。","standard":"每层写输入、输出、责任、失败和日志位置；不要把多个入口混成一个。","practice":"从一个按钮点击开始，逐层定位到数据库并返回页面。","expected":"链路图能指出文件/函数、数据形态和状态变化。","failure":"在 API 返回慢或字段变化时，预测哪一层先暴露问题。","transfer":"对 Job Agent 选一条真实链路做同样追踪。","gate":"不看图能口述五层和两个失败路径。","day":23},{"title":"健康检查、超时与可恢复错误","why":"生产化从可发现故障开始。","standard":"健康检查区分进程存活与依赖可用；超时、重试和用户反馈需分层。","practice":"加入健康检查和请求超时，模拟数据库异常。","expected":"系统明确显示不可用原因，不无限等待或吞错。","failure":"让健康检查误报为绿，说明为什么危险并修正。","transfer":"检查 Job Agent 的启动/健康/错误回退材料。","gate":"故障报告包含检测、影响、止损、恢复和预防。","day":24},{"title":"Docker 与配置边界","why":"客户环境差异会击穿‘我电脑上能跑’。","standard":"镜像包含运行依赖，不包含密钥/本地数据；配置从环境注入。","practice":"写 Dockerfile 和启动说明，在干净环境构建运行。","expected":"容器启动、健康检查、数据持久化和停止恢复可验证。","failure":"缺少环境变量或端口冲突时给明确处理。","transfer":"对照 Job Agent 本地 App/DMG 与容器部署的不同边界。","gate":"交付构建日志、启动命令、已知限制和失败恢复。","day":25},{"title":"全栈自动化与一次小改动","why":"Vibe Coding 的最低标准是能验证 AI 修改没有破坏闭环。","standard":"小改动先写验收，运行相关测试，再人工抽查关键路径。","practice":"增加一个筛选或状态提示，写 5+ 相关自动化测试。","expected":"新功能通过且原核心路径无退化。","failure":"故意修改 API 字段名，观察前后端契约失败并恢复。","transfer":"在 Job Agent 选择低风险小改动候选，只在授权范围内执行。","gate":"保存验收前预测、diff、测试和手工结果。","day":26},{"title":"冷启动与交接 README","why":"真正可交付的系统不能依赖作者口头救场。","standard":"README 包含环境、输入、配置、启动、验证、故障、清理和已知限制。","practice":"在新目录/新终端按 README 从零启动。","expected":"另一人或全新会话能在 15 分钟内得到首个结果。","failure":"故意漏掉一步，让复现者记录阻塞并修正文档。","transfer":"审计 Job Agent README 哪些是系统事实、哪些是目标描述。","gate":"提交冷启动时长、阻塞清单与修订后的 README。","day":27},{"title":"全栈 Gate 与 Job Agent 技术迁移","why":"把绿地练习迁移到棕地系统，检验真实理解。","standard":"迁移不是背目录，而是用同一问题框架追踪输入输出、状态、副作用、测试与失败。","practice":"完成工单系统演示，再画 Job Agent 一条真实链路和两个失败路径。","expected":"能区分‘我读懂/复现/修改/验证’四种所有权强度。","failure":"随机更换入口，判断哪些层复用、哪些需重新定位。","transfer":"更新 Job Agent 学习记录，不把仓库全量测试写成个人成果。","gate":"两条链路均能在 5 分钟内讲清且证据位置可查。","day":28},{"title":"定义知识助手的用户结果与非目标","why":"先避免把主线项目做成泛化 Chatbot。","standard":"目标是给客服生成带引用草稿并由人审核；不直接发送、不替代合规终局判断。","practice":"用虚构 B2B SaaS 文档写用户旅程、MVP 和不做清单。","expected":"一个目标用户、一段闭环、三类指标和风险闸门清楚。","failure":"客户要求‘自动回答所有问题’时给降风险替代。","transfer":"对比 Job Agent 的‘决策助手、不自动投递’边界。","gate":"Solution Brief v1 通过 Context/Scope Gate。","day":29},{"title":"文档解析、清洗与版本","why":"垃圾输入会直接污染检索和回答。","standard":"文档需来源、版本、权限、更新时间、解析状态和内容哈希。","practice":"创建公开/虚构文档集，解析并输出清洗报告。","expected":"能发现空文档、乱码、重复和过期版本。","failure":"加入相互冲突文档并制定新鲜度策略。","transfer":"把 Job Agent 的证据来源版本化思路迁移到文档元数据。","gate":"数据清单含 Owner、许可、版本和质量问题。","day":30},{"title":"Chunk 与 Embedding 实验","why":"切分是检索质量的产品取舍。","standard":"chunk 需保留上下文、来源和权限元数据；大小/重叠影响召回、噪声、延迟和成本。","practice":"选两种 chunk 策略，用同一问题比较检索结果。","expected":"报告不是只列分数，而是说明命中、噪声和引用完整性。","failure":"加入跨段答案，观察过小 chunk 的失败。","transfer":"对比 Job Agent 固定证据片段与 RAG chunk 的差异。","gate":"保存参数、样例、结果和选择理由。","day":31},{"title":"检索、Rerank 与可解释结果","why":"模型回答前先验证找到的证据。","standard":"检索与生成分开观察；top-k、阈值、rerank 和过滤均需版本化。","practice":"实现检索并展示候选文档、得分、来源和耗时。","expected":"至少一个问题能人工确认正确片段排在前列。","failure":"使用模糊问题，记录召回多但排序错的案例。","transfer":"把 Job Agent strong/partial/gap 的可解释思想迁移到检索结果呈现。","gate":"检索演示能说明为什么选这些证据。","day":32},{"title":"带引用回答与无依据拒答","why":"可信 AI 的底线是不能把流畅文本当事实。","standard":"回答每个关键主张绑定来源；证据不足、冲突或过期时拒答/升级人工。","practice":"实现回答、引用和拒答，并人工核对引用。","expected":"引用定位到原文；无答案问题不编造。","failure":"删除关键文档后复问，确认系统不会沿用旧答案。","transfer":"对照 Job Agent ‘生成内容必须引用已确认事实’的守卫。","gate":"通过有答案、无答案、冲突三类手工 Gate。","day":33},{"title":"用户反馈与编辑痕迹","why":"系统是否有用要看用户怎样采用、修改或拒绝。","standard":"反馈至少记录采用/编辑/拒绝、原因、版本和角色，不把点赞等同业务价值。","practice":"增加反馈动作和最终草稿差异记录。","expected":"一次完整交互能追踪从检索到用户决定。","failure":"用户拒绝但不填原因时，设计低负担补充方式。","transfer":"为 Job Agent 设计‘用户纠正 unknown/gap’反馈，不声称已有采用数据。","gate":"日志可回答用户为何不用，而不泄露敏感正文。","day":34},{"title":"RAG v0 演示与边界复盘","why":"把功能组合成可验收业务闭环。","standard":"演示同时覆盖用户结果、系统质量和人机边界。","practice":"完成 10 分钟演示：正常回答、拒答、冲突文档、反馈。","expected":"四条路径均有可复核输入输出和版本。","failure":"模型不可用时展示确定性回退或明确不可用。","transfer":"写 Job Agent 与知识助手的 AI 边界对比表。","gate":"交付 v0、演示记录、Bad Case 列表和 Week 6 最低目标。","day":35},{"title":"角色、资源与动作权限矩阵","why":"企业 AI 首先是身份与数据边界问题。","standard":"权限要定义主体、资源、动作、条件和审计，不只定义页面可见。","practice":"为客服、主管、合规、管理员写权限矩阵。","expected":"每个角色能/不能看什么、做什么有明确原因。","failure":"加入跨部门临时授权和到期回收。","transfer":"把华丰角色/数据边界转成待确认假设，不使用真实敏感字段。","gate":"矩阵覆盖允许、拒绝、审批和审计。","day":36},{"title":"检索前 metadata 权限过滤","why":"生成后再遮挡已经发生了越权泄露。","standard":"权限过滤必须在候选文档进入模型前执行，并保留拒绝审计。","practice":"实现角色过滤，比较同一问题在不同角色下的候选片段。","expected":"越权内容不进入检索上下文，结果差异可解释。","failure":"伪造前端角色参数，确认后端仍拒绝。","transfer":"检查 Job Agent 的本地单用户边界为何不能直接证明企业多租户。","gate":"保存两角色对比和一次攻击失败证据。","day":37},{"title":"提示注入、恶意文档与数据泄漏","why":"RAG 文档本身也可能是不可信输入。","standard":"系统指令、文档内容、用户请求和工具权限分层；敏感动作必须有确定性守卫。","practice":"加入一份恶意文档和越权诱导，记录系统行为。","expected":"恶意指令不改变权限或泄露隐藏内容。","failure":"让恶意文档要求忽略引用，验证引用守卫。","transfer":"对照 Job Agent 不可信 JD/网页采集的 Source Adapter 边界。","gate":"建立注入/泄漏 Bad Case 分类与处理动作。","day":38},{"title":"Hybrid Search 与 Rerank 取舍","why":"企业术语、编号和语义问题常需混合检索。","standard":"关键词擅长精确实体，向量擅长语义；rerank 提升排序但增加延迟/成本。","practice":"用编号、简称和自然语言三类问题比较策略。","expected":"报告包含命中、延迟、成本和失败样例。","failure":"降低召回阈值观察噪声如何伤害回答。","transfer":"在 Job Agent 区分确定性过滤与模型/语义增强。","gate":"选择策略有数据和推翻条件，不以工具流行度决定。","day":39},{"title":"反馈、日志与隐私最小化","why":"可观测不等于把全部用户数据写日志。","standard":"日志只保留定位与评估所需字段，敏感内容脱敏/哈希并设保留策略。","practice":"定义事件 schema，记录检索、回答、反馈、权限拒绝和耗时。","expected":"能从事件重建一次流程但看不到不必要的敏感正文。","failure":"模拟日志系统失败，决定是否阻断高风险操作。","transfer":"审计 Job Agent 哪些本地数据属于个人隐私。","gate":"输出数据最小化表、保留周期和删除动作。","day":40},{"title":"权限与集成自动化测试","why":"权限安全不能靠手点一次。","standard":"测试覆盖角色允许/拒绝、伪造身份、文档变权、注入和日志泄漏。","practice":"写并运行至少 12 个权限/安全测试。","expected":"越权为零；失败测试能定位到过滤层。","failure":"故意把过滤移到生成后，观察测试如何捕获。","transfer":"为华丰方案列出未来必须由客户 IT/安全验证的接口 Gate。","gate":"保存测试清单、结果和残余风险。","day":41},{"title":"企业原型 Gate 与安全回放","why":"用客户能理解的方式证明安全与可用。","standard":"回放先说明角色/风险，再演示允许、拒绝、审计和恢复。","practice":"完成两角色 Demo、攻击失败和权限变化回放。","expected":"客户能回答‘谁能看、谁批准、失败留下什么记录’。","failure":"临时撤销主管权限，展示数据和缓存如何处理。","transfer":"将华丰当前只写为权限/数据契约建议，非已接入。","gate":"交付权限感知 RAG v1 和 Week 6 安全报告。","day":42},{"title":"定义 What Good Looks Like","why":"没有 Rubric，评估只剩个人感觉。","standard":"分开检索、回答、权限/安全、系统质量、业务结果和采用。","practice":"为知识助手写分层 Rubric 和不可接受错误。","expected":"高风险子集、责任人和失败动作明确。","failure":"给流畅但无引用回答高分，再用 Rubric 纠正。","transfer":"对照 Job Agent strong/partial/gap 与用户价值的不同层次。","gate":"Rubric 可供第二个人独立评分并得到近似结论。","day":43},{"title":"构建 30+ Golden Cases","why":"评测集必须代表真实风险而非只测简单正确题。","standard":"至少覆盖有答案、无答案、角色差异、越权、注入、歧义和冲突/过期文档。","practice":"建立 30+ cases，记录输入、角色、期望证据、期望动作和风险级别。","expected":"类别数量达到计划且每条可人工复核。","failure":"删除一类高风险题，观察总体分数为何会虚高。","transfer":"Job Agent 19 条语料作为固定基线，扩展项另起版本。","gate":"评测集有版本、来源、分层覆盖和变更记录。","day":44},{"title":"检索与回答分层评估","why":"回答错可能是没检到、排错或生成错。","standard":"先评检索命中/排序，再评引用与回答，才能定位改进点。","practice":"运行基线并给每个失败贴层级标签。","expected":"报告能区分 retrieval、rerank、generation、permission 与 data 问题。","failure":"让模型回答更保守，观察拒答与覆盖的取舍。","transfer":"把方法迁移到 Job Agent 证据匹配失败分类。","gate":"至少复盘 5 个 Bad Case 的根因与修复候选。","day":45},{"title":"延迟、成本与稳定性日志","why":"质量达标但太慢、太贵或不稳定仍不能上线。","standard":"记录端到端及阶段耗时、token/成本、超时、错误率和重试。","practice":"为同一评测批次生成质量/延迟/成本联合报告。","expected":"能识别 P95 慢点与成本主要来源。","failure":"模拟模型超时和限流，记录用户体验与回退。","transfer":"检查 Job Agent 模型默认可关闭如何降低单点依赖。","gate":"提出一个优化并说明可能伤害的指标。","day":46},{"title":"版本化回归实验","why":"每次改 Prompt/检索/模型都可能让别的子集退化。","standard":"一次实验只明确改变项、假设、版本、结果和回滚条件。","practice":"改变一个 chunk/top-k/rerank 参数，跑同一 30+ 集。","expected":"报告列总体、分组、退化案例和选择建议。","failure":"只看总体提升做 Go，再用高风险子集否决一次。","transfer":"在 Job Agent 选择一个规则变更，先写回归假设。","gate":"能给 Go/Limited Go/No-Go 而非只报分数。","day":47},{"title":"上线、回滚与人工复核 Gate","why":"Eval 的产物是决策，不是图表。","standard":"Gate 包含阈值、样本、负责人、人工复核、失败动作和回滚版本。","practice":"为知识助手写上线/回滚卡。","expected":"质量、权限、延迟、成本、稳定性至少覆盖四类。","failure":"当一个高风险越权 case 失败时，即使总体高分也触发 No-Go。","transfer":"华丰只设计未来 Eval Gate，不填虚构结果。","gate":"每个 Gate 都能回答谁看、何时看、失败做什么。","day":48},{"title":"Eval 周答辩与独立复核","why":"让别人重复你的评估，避免自证成功。","standard":"独立复核包括相同版本、数据、命令、Rubric 和差异解释。","practice":"请另一人或新会话复评 5 条，比较分歧。","expected":"分歧有记录并推动 Rubric/样例更清晰。","failure":"随机替换一个 case 期望，观察版本控制能否发现。","transfer":"明确 Job Agent 工程基线不等于真实用户采用。","gate":"交付基线报告、实验报告、Gate 和复核差异。","day":49},{"title":"选择 Workflow、Agent 或规则","why":"不要为了 Agent 而 Agent。","standard":"稳定步骤用 Workflow/规则；不确定选择才考虑 Agent；高风险动作加人工闸门。","practice":"把客服处理拆成确定步骤和不确定判断。","expected":"每一步写选择、替代方案、成本和推翻条件。","failure":"将所有步骤交给自主 Agent，再指出不可控点。","transfer":"对照 Job Agent 的确定性工作流和模型增强边界。","gate":"选型 Memo 能回答为什么不用更复杂方案。","day":50},{"title":"结构化输出与工具契约","why":"工具调用首先是 API 契约，不是提示词魔法。","standard":"schema 定义字段、类型、必填、错误和幂等键；模型输出必须校验。","practice":"定义 classify、retrieve、draft 三个工具契约。","expected":"合法输出通过，缺字段/未知枚举被拒绝或修复。","failure":"让模型返回额外字段和错误类型，观察校验。","transfer":"在 Job Agent 找一个任务输入/输出 schema 对照。","gate":"保存契约、校验测试和错误样例。","day":51},{"title":"状态机与可恢复执行","why":"多步 Agent 需要知道现在在哪、能去哪里。","standard":"状态包括当前阶段、输入、输出、尝试次数、审批和终止原因。","practice":"画并实现工单草稿状态机。","expected":"正常、失败、取消和恢复路径可演示。","failure":"在中间步骤崩溃，重启后从安全状态恢复。","transfer":"对照 Job Agent 持久任务/状态，标参考与个人理解。","gate":"状态图、存储记录和实际 Trace 一致。","day":52},{"title":"幂等、重试与超时","why":"重复执行在现场会发送两次、写两次或收费两次。","standard":"重试只用于可恢复错误；副作用需幂等键；设上限、退避和超时。","practice":"为工具调用加入幂等键、重试上限和超时。","expected":"重复请求只产生一次副作用；永久错误不反复重试。","failure":"模拟超时后晚到响应，确认不会覆盖新状态。","transfer":"解释 Job Agent 租约/重试如何降低重复副作用。","gate":"通过重复、暂时失败、永久失败、超时四类测试。","day":53},{"title":"只生成草稿，不直接执行高风险动作","why":"先把 AI 放在可逆、可审核的位置。","standard":"模型可建议/草拟；发送、承诺、删除、付款等需要确定性规则或审批。","practice":"实现检索后生成回复草稿和下一步建议。","expected":"系统不具备直接发送能力，草稿带依据和风险提示。","failure":"让模型要求绕过审批，确认工具层拒绝。","transfer":"对照 Job Agent 不自动投递的产品边界。","gate":"能说明哪些动作可自动、需审批或必须人工。","day":54},{"title":"Trace Viewer 与失败分类","why":"排障需要重放每一步，而不是只看最终回答。","standard":"Trace 记录 step、输入摘要、输出、版本、耗时、错误和状态变化。","practice":"实现或输出可读 Trace，演示一次成功一次失败。","expected":"能从 Trace 定位失败层并重放安全步骤。","failure":"移除一个 Trace 字段，判断是否仍可审计。","transfer":"对照 Job Agent 测试/日志证据与产品用户可见解释。","gate":"建立工具、数据、模型、权限、状态五类失败表。","day":55},{"title":"Agent v0 Gate 与现场变化","why":"用突发条件检验系统是否受控。","standard":"现场变化要改变范围、策略或升级路径，而不是继续原计划。","practice":"演练数据不可用、模型变差、工具限流三种变化。","expected":"每种变化有止损、人工接管、恢复和沟通。","failure":"关键工具返回成功但数据错误，说明为何状态码不够。","transfer":"把三类变化迁移到 Job Agent 的求职任务工作流。","gate":"交付 Agent v0、Trace、失败表和变化决策记录。","day":56},{"title":"动作风险分级与人工闸门","why":"不是所有工具调用都需要相同控制。","standard":"按可逆性、影响范围、外部承诺、隐私和金额分级，并绑定审批策略。","practice":"给客服 Agent 动作分低/中/高风险。","expected":"每级有允许、审批、禁止和升级规则。","failure":"加入一个看似低风险但会泄露数据的动作并重新分级。","transfer":"给 Job Agent 的生成、导出、投递候选动作分级。","gate":"风险矩阵经反例仍能稳定判断。","day":57},{"title":"审批队列与责任人","why":"人工闸门必须知道谁在何时看什么。","standard":"审批项需上下文、证据、建议、风险、过期时间、允许动作和审计 ID。","practice":"实现审批队列和批准路径。","expected":"批准后只执行获批版本，过期审批不能复用。","failure":"审批期间草稿改变，确认旧批准失效。","transfer":"华丰方案写业务/IT/安全不同审批责任，不写已确认。","gate":"审批记录能回答谁、何时、基于什么做决定。","day":58},{"title":"拒绝、修改与终止","why":"HITL 不是只有一个‘同意’按钮。","standard":"拒绝要有原因与下一步；修改产生新版本；终止清理资源并保留审计。","practice":"实现拒绝、编辑后重审和终止。","expected":"三条路径状态、版本和日志一致。","failure":"拒绝后重复回调，确认不会重新执行。","transfer":"给 Job Agent 的人工确认设计撤销/修订路径。","gate":"演示三条路径并解释业务含义。","day":59},{"title":"审计日志与最小敏感信息","why":"可追责与隐私必须同时满足。","standard":"审计记录身份、动作、对象、版本、结果和理由；敏感正文按需引用而非全量复制。","practice":"设计审计 schema 并记录一次完整审批。","expected":"能重建决策链，日志不暴露不必要正文。","failure":"模拟日志不可用，决定高风险动作是否停止。","transfer":"对照华丰未来审计需求与当前无生产数据事实。","gate":"通过可追溯与数据最小化双 Gate。","day":60},{"title":"五类必演失败","why":"生产可信度来自失败时的行为。","standard":"最低覆盖批准、拒绝、工具失败、超时、无权限；另加重复请求。","practice":"逐条故障注入并保存 Trace。","expected":"每条有明确用户状态、恢复/升级和无重复副作用。","failure":"同时触发超时与撤销，验证竞态处理。","transfer":"映射 Job Agent 可观察的故障与仍缺失的证据。","gate":"五条路径均能现场复现，不只写文档。","day":61},{"title":"20+ Agent Eval Cases","why":"工作流回归需覆盖状态与副作用，不只是文本质量。","standard":"case 包含前置状态、事件、预期工具/状态/审批/副作用和风险。","practice":"建立并运行 20+ cases。","expected":"正常、异常、权限、审批和重复执行均有覆盖。","failure":"删去副作用断言，观察假阳性如何出现。","transfer":"对照 Job Agent 测试只作为系统证据，不自动算个人编写。","gate":"报告列失败根因、回滚判断和残余风险。","day":62},{"title":"HITL 周答辩与恢复演练","why":"把安全机制讲成用户与业务结果。","standard":"说明人工闸门如何降低失败成本，同时控制延迟和人工负担。","practice":"演示五条路径并回答‘为什么不全自动’。","expected":"能量化至少一种人工负担指标和优化方向。","failure":"Sponsor 要求取消审批提速时，给分阶段证据方案。","transfer":"把人机边界迁移到华丰高风险质量决策。","gate":"交付受控 Agent v1、测试、审计和答辩记录。","day":63},{"title":"场景选择：不是所有需求都值得做","why":"十步闭环的起点是选择，不是接单。","standard":"评估影响、频率、数据可用、Sponsor、风险、可验证性和产品化潜力。","practice":"比较设备维修、合同审查和客服助手三个虚构场景。","expected":"给出选择/暂缓/拒绝及证据缺口。","failure":"高影响场景但无数据 Owner 时，设计最小验证而非直接开工。","transfer":"用同一框架回看华丰候选闭环，不改变 Gate 0 事实。","gate":"选择 Memo 包含替代方案和推翻条件。","day":64},{"title":"准备 45 分钟发现会","why":"好问题来自要做的决策，而不是问题数量。","standard":"问题覆盖目标、As-Is、角色、数据、权限、失败、指标、采用、依赖和时间。","practice":"为设备维修助手写发现会脚本和记录模板。","expected":"15 个问题均说明回答会影响哪个决策。","failure":"客户只给模糊答案时，用样例/观察/数据请求继续。","transfer":"比较华丰已有材料覆盖了哪些问题、哪些仍未知。","gate":"发现会提纲不包含诱导客户接受预设方案。","day":65},{"title":"执行发现会并主动推翻假设","why":"真正的 Discovery 必须允许原判断被改变。","standard":"记录原话/观察、假设、冲突和待办；会中回放理解，不急于给方案。","practice":"角色扮演 45 分钟并记录至少一个被推翻假设。","expected":"会后事实/假设/未知和责任人清楚。","failure":"关键人否认原痛点时，重新定义问题或 No-Go。","transfer":"华丰只能复盘历史材料，不伪造新客户回答。","gate":"录音/记录显示提问导致了范围或指标变化。","day":66},{"title":"As-Is、数据与权限现场图","why":"客户叙述需要转换成共同可确认的工作流。","standard":"图含角色、系统、数据对象、状态、交接、异常、权限和等待。","practice":"画设备维修 As-Is 与数据流。","expected":"客户能指出图中错误并完成一次修订。","failure":"加入 OT/IT 隔离，调整数据接入和人机边界。","transfer":"迁移到华丰来料异常流程，只用脱敏业务对象。","gate":"图中事实、推断、未知使用不同标记。","day":67},{"title":"Scope、非目标与停止条件","why":"范围控制是对结果负责，不是拒绝客户。","standard":"MVP 对准一个瓶颈，写必须做、不做、依赖、验收、停止和变更机制。","practice":"产出设备维修 Solution Brief。","expected":"每项能力能映射到结果和验证；Agent 不直接控制安全产线。","failure":"数据不可用时把方案缩为诊断建议/记录辅助。","transfer":"为华丰写 Gate 0 建议版 Scope，显著标方案未确认。","gate":"10 分钟内解释为什么这样切而不是更大。","day":68},{"title":"客户回放与异议处理","why":"共同确认比漂亮方案更重要。","standard":"回放顺序是理解→未知→取舍→风险→下一步，不假装所有问题已解决。","practice":"做 15 分钟客户回放，处理业务、IT/安全、使用者三类异议。","expected":"每个异议转成决定、验证或 Owner。","failure":"关键用户反对采用时，调整试点和工作流而非只做培训。","transfer":"练华丰‘为什么不重做 QMS、为什么先小闭环’。","gate":"回放记录包含客户修正和下一步，不只有自我陈述。","day":69},{"title":"Discovery Gate 与所有权复盘","why":"把方法能力和真实经历边界同时守住。","standard":"陌生模拟证明方法；华丰证明参与过的 Context；二者不能互相冒充。","practice":"对两套材料做 Context/Scope Rubric 评分。","expected":"陌生场景标模拟；华丰标 Gate 0、本人动作和未验证项。","failure":"随机抽一句强表述，降级到证据支持强度。","transfer":"更新华丰所有权账本的待确认项，不补写记不清的经历。","gate":"交付两套 Discovery 包和一页差异复盘。","day":70},{"title":"To-Be 流程与人机边界","why":"新流程必须真的改变工作，而不是叠加一个聊天框。","standard":"To-Be 标自动、人工、审批、异常、回退和状态回写。","practice":"画设备维修/知识助手目标流程。","expected":"每一步有角色、系统、输入输出和退出条件。","failure":"模型不可用时流程仍有人工/确定性退路。","transfer":"为华丰画建议版 To-Be，标未确认依赖。","gate":"As-Is 痛点与 To-Be 改变逐项对应。","day":71},{"title":"系统架构与数据流","why":"架构只为证明可行、风险和责任服务。","standard":"覆盖入口、身份、数据、检索/Agent、模型、Eval、日志和部署；标信任边界。","practice":"画主线项目架构和一条端到端数据流。","expected":"能指出敏感数据在哪、何时进入模型、如何删除。","failure":"模型或向量库替换时说明影响与验证。","transfer":"Job Agent 只引用实际代码链；华丰只做方案架构。","gate":"架构图可回答七个生产化问题。","day":72},{"title":"集成契约与依赖 Owner","why":"企业项目常死在接口、字段、网络和权限未就绪。","standard":"契约包含系统 Owner、接口、字段/主键、频率、权限、SLA、错误和变更。","practice":"为一个文档源/工单源写集成契约。","expected":"依赖有负责人、进入条件和替代方案。","failure":"接口只读或批量延迟时，调整 Scope 和体验。","transfer":"为华丰写脱敏数据供给契约建议，不声称已打通。","gate":"任何‘等客户提供’都转成具体 Owner、日期和失败动作。","day":73},{"title":"风险登记与安全评审","why":"风险必须有触发条件和应对责任人。","standard":"至少覆盖数据质量、越权、幻觉、注入、成本、延迟、不可用、采用和 Scope 膨胀。","practice":"完成风险表并按概率×影响排序。","expected":"Top 风险有预防、检测、触发、响应和 Owner。","failure":"加入 Sponsor 变化或合规暂停，重排计划。","transfer":"对华丰补 OT/IT、工业数据与质量决策人机边界。","gate":"能解释哪个风险会直接 No-Go。","day":74},{"title":"SLO、告警与事故 Runbook","why":"交付后必须有人知道什么时候系统坏了、怎么办。","standard":"SLO 关联用户体验；告警可操作；Runbook 含检测、止损、沟通、恢复和复盘。","practice":"定义可用性/延迟/错误/越权等 SLO 与一个 Runbook。","expected":"触发一次模拟事故并按 Runbook 恢复。","failure":"告警风暴时调整阈值而不掩盖真实故障。","transfer":"对照 Job Agent 本地形态与企业 SLO 的差距。","gate":"事故演练有时间线、影响、决策与改进项。","day":75},{"title":"RACI、变更控制与回滚","why":"模糊责任会在上线前后变成空档。","standard":"明确客户业务、IT/安全、FDE、产品/工程和 Sponsor 的 R/A/C/I；变更需影响评估。","practice":"完成 RACI、变更模板和回滚步骤。","expected":"每个关键动作有唯一 Accountable；回滚可操作。","failure":"负责人离场时重分责任并判断是否暂停。","transfer":"华丰明确本人非主讲、非交付 Owner。","gate":"随机一个变更能走完提出、评估、决定、验证、记录。","day":76},{"title":"生产就绪评审","why":"Demo 通过不等于可试点。","standard":"评审覆盖功能、数据、权限、安全、Eval、运维、培训、支持和回滚。","practice":"进行 Go/No-Go 评审并保留未决项。","expected":"只有有证据的条目通过；计划/脚本不冒充已验证。","failure":"发现一个权限高风险失败时执行 No-Go。","transfer":"Job Agent/华丰分别标当前真正能通过的 Gate。","gate":"交付生产化包和诚实的 Limited Go/No-Go 建议。","day":77},{"title":"试点基线与实验设计","why":"没有对照和口径，任何提升都可能是幻觉。","standard":"定义对象、周期、基线、样本、三层指标、成功/停止条件和偏差。","practice":"设计 10 名虚构客服/维修人员试点。","expected":"基线数据源和测量责任人明确。","failure":"没有真实基线时只做测量流程，不编提升值。","transfer":"Job Agent 用户价值仍标待验证；华丰仍是方案阶段。","gate":"试点章程可回答谁、多久、测什么、何时停。","day":78},{"title":"历史数据回放与质量观察","why":"回放能在低风险环境暴露数据和工作流问题。","standard":"回放保留版本、输入、预期、输出、人工判定和失败类型。","practice":"用虚构历史工单运行主线系统。","expected":"结果可重复，失败有分类和可追溯样例。","failure":"加入分布变化/过期文档，观察退化。","transfer":"用 Job Agent 固定语料理解离线回归，但不当作在线采用。","gate":"输出回放报告和最严重三个 Bad Case。","day":79},{"title":"试点培训、Champion 与反馈渠道","why":"采用不是发一封上线通知。","standard":"识别 Champion、培训需求、工作流嵌入、反馈入口、支持 SLA 和管理层节奏。","practice":"设计 30 分钟培训与一页操作指南。","expected":"用户知道何时信、何时查证、何时人工接管。","failure":"Champion 离开或用户抵触时调整试点。","transfer":"为华丰列潜在角色而非指定未经确认的人。","gate":"采用计划包含激励、阻力和实际下一动作。","day":80},{"title":"采用指标与人工负担","why":"高模型分不等于用户愿意用。","standard":"看草稿采纳率、编辑距离、拒绝原因、活跃、任务完成和人工接管。","practice":"为虚构试点生成/分析采用事件。","expected":"能区分没看到、不会用、不信任和确实无价值。","failure":"采纳率高但人工审查时间更长时重新判断。","transfer":"给 Job Agent 设计受控用户测试，不宣称尚未执行的结果。","gate":"指标卡含口径、基线、分群和误读方式。","day":81},{"title":"业务结果与替代解释","why":"结果变化可能来自季节、样本或流程变化。","standard":"同时列主解释、替代解释、所需证据和不能下的结论。","practice":"分析 AHT/响应时间等虚构前后数据。","expected":"结论强度不超过设计和样本支持。","failure":"总体改善但高风险类别变差时给 Limited Go。","transfer":"华丰不使用虚构 ROI；只写未来测量建议。","gate":"每个结论至少有一个替代解释和验证动作。","day":82},{"title":"Go、Limited Go、No-Go 与扩张条件","why":"FDE 对结果负责也包括敢于停止。","standard":"决策同时看业务、质量、采用、风险、成本和依赖；扩张需新的 Gate。","practice":"对试点做决策并写下一阶段范围。","expected":"建议包含证据、未决风险、Owner 和日期。","failure":"Sponsor 要求全量扩张时用分层 Gate 控制。","transfer":"Job Agent/华丰只在其真实阶段给建议。","gate":"能在 3 分钟内为 No-Go 辩护而不防御项目。","day":83},{"title":"10 分钟客户汇报与复盘","why":"客户需要的是决策，不是功能列表。","standard":"汇报结构：目标/基线→方案→结果→风险/局限→建议→下一步。","practice":"完成汇报和连续追问。","expected":"三层指标、采用阻力和 Go 决策清楚。","failure":"听众质疑样本和 ROI 时能降级结论。","transfer":"分别练模拟项目、Job Agent、华丰的真实性标签。","gate":"交付试点包、录音、问题清单和 Week 13 产品化输入。","day":84},{"title":"区分定制、可复用资产与应拒绝需求","why":"产品化是 FDE 与高级外包的分水岭。","standard":"每项现场需求归为客户特有、可配置模板、通用产品能力、SI 工作或应拒绝。","practice":"复盘 90 天产物并完成分类。","expected":"每个可复用项有适用边界和下一客户验证。","failure":"把所有定制都产品化，再识别维护成本和错误抽象。","transfer":"Job Agent 可看 Source Adapter/Domain Pack/Eval；华丰只提建议。","gate":"输出产品化阈值表和拒绝需求清单。","day":85},{"title":"沉淀连接器、权限、Eval 与 Workflow 模板","why":"Compounding 必须产生可复用的具体资产。","standard":"模板包含接口、配置、测试、适用范围、限制和版本。","practice":"整理至少四类可复用资产及复用说明。","expected":"新虚构客户能通过配置而非重写使用一部分。","failure":"换一个行业红线，检查模板是否错误泛化。","transfer":"只将本人实际理解/实现的资产标个人成果。","gate":"交付资产索引和一次跨场景复用演示。","day":86},{"title":"写 Field RFC 回流产品","why":"现场摩擦要变成产品与工程可决策的输入。","standard":"RFC 含问题、现场证据、受影响客户、当前 workaround、通用方案、风险、指标和推翻条件。","practice":"选择一个反复出现的权限/Eval/集成摩擦写 RFC。","expected":"产品/工程能据此决定做、试验、拒绝或继续收集。","failure":"只有一个客户出现时，标假设而非‘行业共性’。","transfer":"从 Job Agent/华丰分别找一个候选，证据不足就不升格。","gate":"完成 5 分钟 RFC 评审与修订。","day":87},{"title":"组装三类案例，不混淆证据","why":"作品集要展示迁移能力和真实性。","standard":"最小/虚构案例证明练习；Job Agent 证明技术理解/动作；华丰证明 Context/Scope 参与。","practice":"完成权限助手案例和 Job Agent/华丰两套 4C 叙事。","expected":"每篇含问题、所有权、选择、运行/验证、局限和下一步。","failure":"让审阅者随机指出一句，检查是否误把模拟/团队结果写成个人真实成果。","transfer":"统一所有权账本、事实卡与案例表述。","gate":"公开材料完成脱敏且没有受试者/客户原始数据。","day":88},{"title":"八维复评与陌生场景迁移测验","why":"最终检验不是熟悉项目，而是换场景仍能完成。","standard":"能力四级：能识别、能解释、能在项目完成、能在陌生变化中完成。","practice":"用新场景完成 60 分钟 Discovery→Scope→架构/Eval→Rollout 白板。","expected":"与 Week 1 八维基线逐项比较证据，不按自信评分。","failure":"中途加入数据不可用或关键人反对，必须改变方案。","transfer":"指出 Job Agent/华丰各补强哪些维度、仍缺哪些。","gate":"输出八维证据表和下一 90 天唯一补短主线。","day":89},{"title":"最终答辩与进入投递冲刺","why":"把能力证据转成求职材料，但不让表达领先事实。","standard":"最终答辩按 Context→Code→Calibration→Compounding，投递冲刺只负责简历、Mock 和申请。","practice":"完成 10 分钟 Demo、20 分钟追问、交付包索引和 14 天冲刺准备度检查。","expected":"系统可运行、失败可演示、评估可复跑、采用/局限可解释、产品化可展示。","failure":"被追问不常用数字时现场查证，不靠猜测维持流畅。","transfer":"事实档案只在表述/版本变化时更新，不再作为每日第一任务。","gate":"毕业：八维各有证据；未验证项明确；满足条件后进入 /ai-fde-14。","day":90}],"weeks":[{"week":1,"phase":"角色与最小闭环","subtitle":"先完成一次小交付，再理解 4C","abilities":["Context","基础工程","Calibration"],"deliverable":"可重复运行的工单报告、一次验收先行小改动、5 分钟演示与 4C 复盘。","stageGate":"不看教程能解释输入、处理、输出、坏数据和验证；报错时能提供命令、完整错误、预期与已尝试动作。","range":[1,7]},{"week":2,"phase":"Discovery、Scope 与数据基础","subtitle":"把 Context 前移，再补完成薄切片所需的最少技术","abilities":["Discovery","产品判断","数据基础"],"deliverable":"15 个发现问题、As-Is、事实/假设/未知、Solution Brief v0，以及公开 API→SQLite 小闭环。","stageGate":"能把‘做 AI 助手’缩成一个用户、一个流程瓶颈、一个薄切片和可复核验收，不先套技术方案。","range":[8,14]},{"week":3,"phase":"后端 API 与状态","subtitle":"把业务动作转成稳定接口","abilities":["基础工程","企业集成","调试"],"deliverable":"工单 CRUD/统计 API、SQLite 状态、校验、日志、环境边界和自动化测试。","stageGate":"新环境按 README 可启动；正常输入、非法状态、缺字段和不存在记录都有可预测响应。","range":[15,21]},{"week":4,"phase":"最小全栈与部署","subtitle":"证明能读、改、跑、验证，而非默写代码","abilities":["全栈闭环","部署","故障定位"],"deliverable":"可操作界面、完整调用链、健康检查、Docker、5+ 端到端测试和冷启动记录。","stageGate":"另一人只看 README 能启动；能追踪页面→API→Service→Storage→页面并解释两个失败路径。","range":[22,28]},{"week":5,"phase":"RAG 最小正确闭环","subtitle":"回答必须有依据，无依据必须拒答","abilities":["AI 应用","数据处理","引用溯源"],"deliverable":"权限感知知识助手 v0：文档→chunk→检索→回答→引用→拒答→反馈。","stageGate":"引用可定位原文；无依据问题明确拒答；能解释 chunk/top-k 改变带来的收益与代价。","range":[29,35]},{"week":6,"phase":"企业权限与集成","subtitle":"权限过滤必须发生在检索阶段","abilities":["企业集成","权限安全","用户反馈"],"deliverable":"两种以上角色、metadata 过滤、越权/注入测试、hybrid/rerank 和反馈日志。","stageGate":"越权测试零通过；引用能定位；权限不只写在 Prompt；日志与错误中不泄露敏感内容。","range":[36,42]},{"week":7,"phase":"Eval 与可观测","subtitle":"从看起来不错升级为可回归","abilities":["Calibration","指标","可观测"],"deliverable":"30+ Golden Cases、Rubric、失败分类、版本化回归、延迟/成本和上线/回滚 Gate。","stageGate":"修改策略后能用同一评测集解释变好、变差和取舍；不使用单一总体准确率掩盖高风险失败。","range":[43,49]},{"week":8,"phase":"Agent 与 Workflow","subtitle":"从问答升级到受控行动","abilities":["AI Workflow","状态","可靠性"],"deliverable":"工单分类→检索→草稿→建议下一步，包含工具调用、状态、幂等、重试、超时和 Trace。","stageGate":"工具失败不会无限重试或重复副作用；每次调用可追踪输入、输出、状态和错误。","range":[50,56]},{"week":9,"phase":"HITL、审计与高风险控制","subtitle":"批准、拒绝、修改、终止都要成为系统状态","abilities":["HITL","安全","审计"],"deliverable":"风险分级、审批队列、拒绝/修改/终止、审计日志与 20+ Agent 测试。","stageGate":"可演示批准、拒绝、工具失败、超时和无权限；高风险动作不能绕过人工。","range":[57,63]},{"week":10,"phase":"陌生场景 Discovery 与华丰迁移","subtitle":"先证明方法可迁移，再回看自己的项目","abilities":["客户发现","范围","沟通"],"deliverable":"设备维修 AI 助手发现会、As-Is、事实/假设/未知、Scope、客户回放；华丰迁移版。","stageGate":"能在新信息出现时改变判断；华丰严格区分最新事实、历史主张、方案建议、未知与本人所有权。","range":[64,70]},{"week":11,"phase":"生产化方案与责任边界","subtitle":"数据、权限、集成、风险、SLO、RACI 和回滚","abilities":["生产化","企业集成","交付管理"],"deliverable":"To-Be、架构、数据/权限、集成依赖、风险登记、RACI、SLO、Runbook 与 Rollback。","stageGate":"能回答数据从哪来、谁能看、怎样接入、失败怎么办、怎样观测、怎样停用恢复、谁负责。","range":[71,77]},{"week":12,"phase":"模拟试点、采用与结果判断","subtitle":"上线不等于价值，允许给 No-Go","abilities":["Adoption","业务指标","现场推进"],"deliverable":"虚构历史数据回放、试点计划、培训/反馈、三层指标、Go/Limited Go/No-Go 和客户汇报。","stageGate":"结论同时覆盖业务、系统质量和用户采用；模拟证据显著标注，不为项目成功强行解释结果。","range":[78,84]},{"week":13,"phase":"产品化、作品集与投递","subtitle":"把一次性交付变成下一次更快","abilities":["Compounding","产品判断","端到端交付"],"deliverable":"可复用资产、Field RFC、两篇案例、10 分钟 Demo、八维复评和 14 天投递入口。","stageGate":"能以 4C 讲清完整交付；真实、模拟、参考和个人贡献标签一致；下一个客户可复用资产明确。","range":[85,90]}],"fourC":[["Context","角色、流程、数据、权限、失败成本与业务结果"],["Code","运行、集成、读改、测试、部署与失败恢复"],["Calibration","基线、Eval、日志、人工抽查、成本与采用"],["Compounding","连接器、模板、评估集、Field RFC 与产品回流"]],"steps":["场景选择","Discovery","技术定界","架构","原型","Eval","生产化","采用","产品化","商业扩展"],"abilities":[["基础工程","运行/追链/小改动/失败恢复"],["AI 应用","RAG、Agent、HITL 与边界"],["企业集成","身份、权限、数据与接口"],["Eval/可观测","评测、日志、成本与回归"],["Discovery","角色、流程、事实与未知"],["沟通协同","回放、异议、RACI 与推进"],["产品判断","Scope、非目标、取舍与回流"],["端到端交付","从模糊目标到采用与产品化"]]},"fde14":{"config":{"id":"fde","shortName":"AI FDE","sidebarTitle":["AI FDE","优先投递"],"sidebarCopy":"达到目标 JD 最低 Gate 后的产品 / 解决方案型 FDE 投递冲刺 · 14 天","heroTitle":["从客户问题出发，","把方案推进到采用"],"lead":"这是达到目标 JD 最低 Gate 后的求职冲刺：围绕 Job Agent 与华丰质量域，把客户发现、范围界定、薄切片、验证、采用和现场反馈转成可复核的 AI FDE 投递证据；能力缺口继续从 90 天系统课按需补齐。","definitionTitle":"这里的 AI FDE，不是外派技术员，也不是纯后端","definitionText":"核心是进入真实场景，把模糊诉求变成可交付范围；代码承担可行性、集成、验证和排障。","definitionStrong":"发现 → 工作流 → 范围 → 薄切片 → Demo/Eval → 验收 → 采用 → 反馈","definitionPairs":[["第一能力","客户发现与交付采用（13 条 FDE JD 中各 12 条）"],["技术底线","能借助 AI 读、改、跑、集成、验证、排障并交付"],["完整训练","90 天系统课：4C、十步闭环、八维能力与四级项目阶梯"]],"weeks":[{"label":"第一周","range":[1,7],"theme":"材料转化 · FDE 叙事与投递"},{"label":"第二周","range":[8,14],"theme":"现场演练 · Mock 与证据补强"}],"narratives":[{"tag":"JOB AGENT · FDE","title":"发现、薄切片与采用","text":"求职决策工作流 → 最痛断点 → 技术范围 → Demo/Eval → 采用阻力 → 反馈产品"},{"tag":"华丰 · FDE","title":"现场发现与 QuickStart","text":"角色/流程/系统约束 → 四类衔接缺口 → 最小闭环 → 验收、采用与下一步"}],"materials":[["岗位矩阵与能力雷达","resume/00-role-map/jd-matrix.md · capability-radar.md"],["事实卡与数字证据","resume/job-agent-fact-card.md · evidence-snapshot.md"],["双项目所有权账本","resume/01-ownership-ledger/job-agent-ownership-v1.md · huafeng-ownership-v1.md"],["项目决策与面试防守","docs/learning/INTERVIEW_DEFENSE.md"],["华丰阶段与客户材料","COOL-华丰/华丰项目进展记录.md · 公开安全摘要"],["FDE 90 天系统训练","FDE/02-90天路线/90天学习路线.md"],["FDE 14 天源计划","resume/2027秋招_AI_FDE优先投递_14天学习计划.md"]],"scoreDimensions":["客户发现","范围与薄切片","AI 边界与 Eval","可行性与现场变化","采用推进与所有权"],"finalGates":["两套 FDE 5 分钟叙事均达到 85 分","第一批 FDE 投递有真实 tracker 记录","3–5 个核心数字口径一致，其余可查询","完成一次新虚构场景发现会并标明仅模拟","完成一条真实代码链与两个失败路径","随机抽一个非手写模块，能解释→小改→测试→回滚","F7 投递前完成一次小改动和测试","至少两次 Mock；未执行真人部分标待复评","最终投递包已完成脱敏","所有未验证结果标待验证"],"fallback":{"order":"Day 1 项目口径（≤2h）→ Day 2 价值主张 → Day 3 Job Agent+投递 → Day 5/6 华丰 → Day 10/11 Mock","cards":[["保留","项目全貌、贡献四层、3–5 个核心数字、两套 FDE 叙事和真实投递记录。"],["压缩","Day 4 只做 Eval Gate；Day 9 白板只做一题。"],["条件","Day 13 的部署部分只针对明确要求现场调试或部署的岗位；代码链与小改动提前到第一周完成。"]]}},"days":[{"day":1,"title":"【通用·一次性】项目口径、贡献层次与岗位分层","hours":"6–8h","focus":"既能把项目作为完整系统讲清楚，也能说明自己在哪些层次真正承担责任。","morning":"为 Job Agent 与华丰各画一张项目全貌图，再用‘理解—复现/验证—个人改动—团队结果’四层标注；数字快照只选 3–5 个核心口径。","afternoon":"把 13 条 FDE 岗位分成无机考、读改小功能、独立编码或算法，并确认第一批投递顺序。","evening":"完成 3 分钟项目全貌讲解、60 秒个人动作讲解和 90 秒转行动机录音。","deliverables":["双项目全貌图","贡献层次表","3–5 个核心数字","岗位考核分层","两档项目录音","90 秒转行动机"],"acceptance":"能讲整个系统而不缩成个人任务清单；能把理解、可复现能力、本人历史动作和团队结果分别回答；其余数字知道去哪里查。","materials":["resume/evidence-snapshot.md","resume/01-ownership-ledger/*.md","resume/00-role-map/jd-matrix.md"],"framework":["‘我的项目’可以包含团队和继承系统，但‘我原创/我实现’是更窄的历史事实。","能复现、修改、测试和迁移，证明能力属于你；不需要改写历史作者。","从 Day 2 起每天第一步写客户结果卡，不晨读证据。"],"guides":[{"title":"项目口径索引教程（用于查询，不用于背诵）","steps":["先写日期、仓库和提交号；工作区有改动时用 git archive 导出干净快照。","扫描简历、讲稿和弹药库，把测试、API、用例、语料、代码量和周期等数字全部入表，但只选 3–5 个能说明规模、质量或变化的数字作为核心口径。","测试以测试收集器为准，API 以 OpenAPI 为准，用例以追踪矩阵为准，语料以版本文件为准。","只有完整执行且退出码为 0 才能写‘通过’；只 collect 或 list 不能写运行成功。","完整数字基线只保存在 evidence-snapshot.md；主叙事仅选 3–5 个‘数字 → 判断 → 动作’锚点，不在讲稿里铺开数字清单。","把数字分成系统基线、团队结果、个人改动结果；它们都可以讲，但不能互相替代。","建档后不必每天重跑或背数字；被问到非核心数字时现场查索引，比猜一个流畅答案更专业。"]},{"title":"项目归属与能力层次教程","steps":["项目全貌：只要它确实属于你的学习、实习或项目经历，你可以称‘我的项目’，并讲完整工作流和架构。","理解所有权：能解释模块、取舍和失败路径；这证明你理解系统，但不自动证明历史上由你原创。","能力所有权：能复现、修改、测试和迁移；这证明能力已经属于你。","动作归属：写清本人做出的决策、修改、实现或验证，以及导师、团队、参考系统和 AI 提供了什么。","区分这些层次不是限制你讲项目，而是让面试官同时看见系统理解、可迁移能力和真实贡献。"]},{"title":"项目阶段与公开表述红线","steps":["瞳孔仪 15/20 只称‘阶段可用输出率 75%’，不得称算法准确率或临床准确率。","华丰仍是 Gate 0 前方案阶段，不展示为已开发上线、个人主讲或个人推动交付。","公开材料只用脱敏摘要，不上传简历隐私、受试者信息、客户原始材料或华丰敏感数据。"]}]},{"day":2,"title":"FDE 简历、价值主张与投递包 v1","hours":"6–8h","focus":"让招聘方 30 秒看懂你能解决什么现场问题。","morning":"把简历主线改为客户发现、方案范围、AI 边界、验证和采用，技术栈放到证据层。","afternoon":"为 Job Agent 与华丰各写 15 秒、60 秒、3 分钟版本，并整理公开安全作品索引。","evening":"完成第一批岗位定制语句和投递前检查，不猜测未展示的考核形式。","deliverables":["FDE 简历 v1","双项目三档讲稿","作品索引","岗位定制表"],"acceptance":"能够用问题、个人动作和证据解释岗位匹配，不靠‘全栈’等标签。","materials":["INTERVIEW_DEFENSE.md","job-agent-fact-card.md","huafeng-ownership-v1.md"],"framework":["FDE 简历先写场景和结果责任，再写技术。","强动词写清责任方式：主导决策、AI 协作实现、个人验收/验证；系统能力可以用‘项目/系统’作主语。","项目阶段与规划能力分开。"]},{"day":3,"title":"Job Agent：发现、范围与第一批投递","hours":"6–8h","focus":"把 C 端项目讲成可验证的 FDE 交付闭环。","morning":"还原从看到 JD 到决定投递的现状工作流，识别角色、断点、输入输出、成功标准和采用阻力。","afternoon":"完成必须做/暂不做、依赖、AI/规则/人工边界、Demo、验收和停止条件。","evening":"录制 5 分钟 FDE 讲稿；投递仍有效且条件匹配的 F4、F9a、F11、F9b、F1/F2、F5。","deliverables":["current-workflow.md","technical-scope.md","thin-slice-demo.md","FDE 讲稿录音","投递记录"],"acceptance":"能解释为什么这样切范围、客户为什么采用或拒绝。","materials":["Job Agent 用户旅程","API/ADR/测试证据","FDE 第一批岗位表"],"framework":["先发现问题，再决定方案。","薄切片同时包含用户闭环、数据、Demo 和验收。","投递只记录真实提交结果。"]},{"day":4,"title":"【通用】AI 边界、Eval 与验收证据","hours":"6–8h","focus":"把可信 AI 变成可复核的上线和回滚 Gate。","morning":"为 Job Agent 写 AI/规则/人工职责矩阵和风险动作回退。","afternoon":"核验 19 条语料并扩成 20 条黄金集，补 Rubric、Bad Case、版本与回滚门槛。","evening":"练‘90% 为什么不能上线’和指标下降诊断。","deliverables":["AI 边界矩阵","golden-set-20.md","rubric.md","bad-case-taxonomy.md","上线/回滚 Gate"],"acceptance":"质量、延迟、成本、稳定性、安全、人工负担至少覆盖四类。","materials":["docs/EVIDENCE_FIT_SCORING.md","evaluation_corpus.v1.json","evidence-snapshot.md"],"framework":["模型得分不是产品价值。","总体准确率会掩盖高风险子集失败。","每个 Gate 必须有责任人和失败动作。"]},{"day":5,"title":"华丰：客户发现、角色与系统现状","hours":"6–8h","focus":"不靠架构图也能讲清客户真正的问题。","morning":"画角色、现流程和系统地图，标四类衔接缺口、数据源、责任人和未决问题。","afternoon":"整理会议事实/假设/未知，明确个人参与范围和客户/团队依赖。","evening":"录制‘为什么不重做 QMS、为什么先小场景’回答。","deliverables":["as-is-workflow.md","stakeholder-map.md","问题证据表","本人责任 30 秒答案"],"acceptance":"能区分客户事实、本人推断和仍待确认内容。","materials":["华丰会议速览包","华丰项目进展记录","huafeng-ownership-v1.md"],"framework":["B 端先画角色与现流程。","当前仍是 Gate 0 前方案阶段。","本人负责补充讲解、调研补充、方案更新与 HTML 制作。"]},{"day":6,"title":"华丰：QuickStart、集成、治理与采用","hours":"6–8h","focus":"把现场问题转成可验收、可采用的最小闭环。","morning":"定义目标用户、最小闭环、非目标、系统和数据依赖。","afternoon":"补 AI/规则/人工责任、权限审计、Demo、验收基线、采用阻力与推广路径。","evening":"完成 FDE 版华丰 5 分钟叙事和八问应答。","deliverables":["solution-brief.md","integration-map.md","governance-matrix.md","pilot-charter.md","adoption-risks.md"],"acceptance":"能说清谁使用、谁审批、谁阻碍、何时停止或升级。","materials":["华丰方案 v1.0","华丰会议讲稿","项目进展记录"],"framework":["QuickStart 不是缩小版平台，而是最小业务闭环。","集成依赖必须有责任人和失败处理。","没有历史基线时只设计测量方法。"]},{"day":7,"title":"FDE 第一周答辩与第二批投递","hours":"6–8h","focus":"用评分而不是文采决定下一周训练量。","morning":"完成 Job Agent、华丰两套 5 分钟答辩。","afternoon":"按客户发现、范围质量、AI 边界、可行性证据、采用推进五维评分。","evening":"修最低分项并投递仍有效的第二批 FDE/解决方案岗位。","deliverables":["两套 5 分钟录音","week-1-score.md","gap-list.md","第二批投递记录"],"acceptance":"两套均 ≥85；70–84 补证据；低于 70 暂停包装。","materials":["前 6 天全部产物","FDE 计分板"],"framework":["答辩检验追问稳定性。","最低分项决定下一步。","投递与学习并行。"]},{"day":8,"title":"【通用】STAR、项目深挖与可复现表达","hours":"6–8h","focus":"让故事同时展示项目全貌、本人责任和可迁移能力。","morning":"整理需求纠偏、失败复盘、冲突、无管理权推进等真实故事。","afternoon":"建立‘项目结果 → 本人责任 → 可复现动作 → 追问证据’表。","evening":"随机抽题录音；没有真实故事的题标‘素材缺口’，不得编造。","deliverables":["STAR 故事库","responsibility-reproduction-map.md","追问清单","抽题录音"],"acceptance":"每个故事有项目结果、个人动作、协作者、可复现能力和局限。","materials":["项目弹药库 §3","双项目所有权账本"],"framework":["团队/项目结果可以讲，同时说明本人责任和复现能力。","不知道就说未知并给验证路径。","面试重点是能否重复关键判断与动作，不是逐字符手写。"]},{"day":9,"title":"FDE 白板：模糊诉求到 QuickStart","hours":"6–8h","focus":"在 10 分钟内从客户目标推进到最小闭环和验收。","morning":"完成‘质量异常 AI 助手’40 分钟白板题。","afternoon":"完成‘岗位匹配 Eval 系统’白板题，强调范围和采用而非模型名词。","evening":"复盘澄清问题、假设、替代方案与停止条件。","deliverables":["两份白板稿","whiteboard-score.md","改进清单"],"acceptance":"白板包含事实/假设/未知、非目标、验收、采用和升级条件。","materials":["Day 3 Scope","Day 6 QuickStart","FDE 发现框架"],"framework":["先问角色、流程、问题、数据和成功标准。","白板展示取舍，不追求唯一答案。","架构只在需要证明可行时出现。"]},{"day":10,"title":"Job Agent FDE Mock","hours":"6–8h","focus":"完成第一次 FDE 压力校准。","morning":"演练 15 秒、60 秒、5 分钟和深挖四档表达。","afternoon":"进行真人 Mock；无人可约时录屏自答并标待真人复评。","evening":"记录每个翻车点、原回答和下一版答案。","deliverables":["四档录音","mock-job-agent-score.md","correction-list-v1.md"],"acceptance":"扛住为何不是套壳、如何证明可行、没有用户数据怎么办。","materials":["Job Agent FDE 讲稿","Mock 评分表"],"framework":["四档事实不变，只改变密度。","工程证据不等于用户价值。","未执行真人 Mock 不得标已完成。"]},{"day":11,"title":"华丰 FDE Mock","hours":"6–8h","focus":"校准 B 端阶段、范围、采用和责任表达。","morning":"完成项目阶段、客户发现、方案范围和采用阻力压力测试。","afternoon":"进行真人 Mock 或待复评录屏。","evening":"用肯定式讲清项目处于方案阶段，以及本人负责调研补充、方案更新、HTML 与补充讲解。","deliverables":["huafeng-fde-mock 录音","mock-huafeng-score.md","correction-list-v2.md"],"acceptance":"30 秒内清楚说出项目全貌、当前阶段和本人责任。","materials":["华丰八问","huafeng-ownership-v1.md"],"framework":["先说当前阶段，再说个人动作。","方案阶段的 Discovery、Scope 与材料制作本身就是有效 FDE 经验。","客户结果与方案建议分开。"]},{"day":12,"title":"新场景发现会与客户回放","hours":"6–8h","focus":"训练独立主持发现，而不是重复华丰材料。","morning":"用虚构‘设备维修 AI 助手’做 45 分钟发现会，不写进简历。","afternoon":"输出事实/假设/未知、Solution Brief，并做 15 分钟客户回放。","evening":"演练数据不可用、关键人反对、模型效果不足三类现场变化。","deliverables":["fictional-discovery-session.md","facts-assumptions-unknowns.md","solution-brief.md","customer-playback 录音"],"acceptance":"能在信息不完整时缩范围、设计验证并推动下一步。","materials":["新虚构场景","FDE 发现问题清单"],"framework":["模拟只训练方法，不冒充经历。","先回放理解，再给方案。","现场变化要改变范围、计划或升级路径。"]},{"day":13,"title":"条件技术能力：代码链、现场小改动与部署判断","hours":"6–8h","focus":"形成 Vibe Coding 条件下可演示的读、改、跑、验证能力。","morning":"追踪 Job Agent 页面→API→Service→Storage→页面完整链路，指出至少两个失败路径。","afternoon":"针对 F7 做一次本地小改动、运行相关测试并解释错误；不做算法题。","evening":"针对 F8/F10 写启动、配置、日志、权限、失败恢复与 Ollama/vLLM 接入判断；未实跑就标‘方案’。","deliverables":["real-code-chain.md","小改动与测试记录","deployment-decision-card.md"],"acceptance":"能解释修改影响、验证结果和两个失败路径。","materials":["Job Agent 页面/API/Service/Storage","相关测试","MACOS_DISTRIBUTION.md"],"framework":["代码能力目标是读、改、跑、排障。","部署脚本不等于生产上线。","只按目标 JD 补条件能力。"]},{"day":14,"title":"【通用】最终答辩、投递包与跟踪","hours":"6–8h","focus":"把学习成果组装成可复核的 FDE 投递证据。","morning":"Job Agent、华丰各做一次 15 分钟答辩，加 20 分钟连续追问。","afternoon":"组装 FDE 简历、两篇案例、事实卡、Eval 包、证据索引、脱敏清单和 tracker。","evening":"复盘已投岗位反馈，写 30/60/90 天路线；不学新内容。","deliverables":["final-fde-defense 录音","FDE application package","evidence-index.md","privacy-checklist.md","application-tracker.md"],"acceptance":"项目全貌、本人责任、当前阶段与核心口径前后一致；未完成项标待验证。","materials":["前 13 天全部产物","FDE 投递 tracker"],"framework":["毕业是证据 Gate，不是日期 Gate。","投递包应在 5–15 分钟内可复核。","真实反馈决定下一轮训练。"]}]}};</script>
+  <script>(function () {
+  "use strict";
+
+  var DATA = window.__FDE_DATA__ || {};
+  var STORAGE_KEY = "agent-os-fde-standalone-progress-v1";
+  var STORAGE_PARTITIONS = {
+    fde90Stages: "fde-standalone-90-stages",
+    fde90Notes: "fde-standalone-90-notes",
+    fde14Tasks: "fde-standalone-14-tasks",
+    theme: "fde-standalone-theme",
+  };
+  var ROUTES = ["fde-90", "fde-14"];
+  var HASH_ROUTES = { "fde-90": "#/fde-90", "fde-14": "#/fde-14" };
+  var STAGE_KEYS = ["understand", "build", "transfer"];
+  var STAGE_LABELS = {
+    understand: "我能解释",
+    build: "我做出来了",
+    transfer: "我能迁移",
+  };
+  var memoryValue = null;
+  var storageAvailable = true;
+  var renderedRoute = "";
+  var statusTimer = 0;
+  var scrollFrame = 0;
+
+  var elements = {
+    app: document.getElementById("app"),
+    brand: document.getElementById("brand"),
+    sidebar: document.getElementById("sidebar"),
+    menuOpen: document.getElementById("menu-open"),
+    menuClose: document.getElementById("menu-close"),
+    menuScrim: document.getElementById("menu-scrim"),
+    dayNav: document.getElementById("day-nav"),
+    progressLabel: document.getElementById("progress-label"),
+    progressValue: document.getElementById("progress-value"),
+    progressBar: document.getElementById("progress-bar"),
+    readingLine: document.getElementById("reading-line"),
+    search: document.getElementById("search"),
+    searchCount: document.getElementById("search-count"),
+    expandAll: document.getElementById("expand-all"),
+    theme: document.getElementById("theme"),
+    exportJson: document.getElementById("export-json"),
+    exportMd: document.getElementById("export-md"),
+    importTrigger: document.getElementById("import-trigger"),
+    importFile: document.getElementById("import-file"),
+    print: document.getElementById("print"),
+    storageWarning: document.getElementById("storage-warning"),
+    status: document.getElementById("status"),
+    content: document.getElementById("content"),
+    backTop: document.getElementById("back-top"),
+  };
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (character) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;",
+      }[character];
+    });
+  }
+
+  function clamp(value, minimum, maximum) {
+    var number = Number(value);
+    return Number.isFinite(number) ? Math.max(minimum, Math.min(maximum, number)) : minimum;
+  }
+
+  function uniqueIntegers(values, minimum, maximum) {
+    if (!Array.isArray(values)) return [];
+    return Array.from(new Set(values.map(Number).filter(function (value) {
+      return Number.isInteger(value) && value >= minimum && value <= maximum;
+    }))).sort(function (left, right) { return left - right; });
+  }
+
+  function defaultState() {
+    var darkPreferred = false;
+    try {
+      darkPreferred = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } catch {
+      darkPreferred = false;
+    }
+    // A single versioned record is more reliable under file://, while the two
+    // course branches remain deliberately isolated so progress never leaks
+    // between the 90-day training route and the 14-day sprint route.
+    return {
+      version: 1,
+      theme: darkPreferred ? "dark" : "light",
+      route: "fde-90",
+      fde90: {
+        gate0: false,
+        stages: [],
+        evidence: {},
+        abilities: Array(8).fill(1),
+      },
+      fde14: {
+        completedDays: [],
+        finalGates: [],
+        scores: [0, 0],
+      },
+    };
+  }
+
+  function normalizeState(input) {
+    var base = defaultState();
+    var source = input && typeof input === "object" ? input : {};
+    base.theme = source.theme === "dark" ? "dark" : source.theme === "light" ? "light" : base.theme;
+    base.route = ROUTES.indexOf(source.route) >= 0 ? source.route : base.route;
+
+    var fde90 = source.fde90 && typeof source.fde90 === "object" ? source.fde90 : {};
+    base.fde90.gate0 = fde90.gate0 === true;
+    base.fde90.stages = Array.isArray(fde90.stages) ? Array.from(new Set(fde90.stages.filter(function (item) {
+      if (typeof item !== "string") return false;
+      var match = item.match(/^(\d+):(understand|build|transfer)$/);
+      return Boolean(match && Number(match[1]) >= 1 && Number(match[1]) <= 90);
+    }))).sort() : [];
+    if (fde90.evidence && typeof fde90.evidence === "object" && !Array.isArray(fde90.evidence)) {
+      Object.keys(fde90.evidence).forEach(function (key) {
+        var day = Number(key);
+        if (Number.isInteger(day) && day >= 1 && day <= 90 && typeof fde90.evidence[key] === "string") {
+          base.fde90.evidence[day] = fde90.evidence[key].slice(0, 50000);
+        }
+      });
+    }
+    if (Array.isArray(fde90.abilities) && fde90.abilities.length === 8) {
+      base.fde90.abilities = fde90.abilities.map(function (value) { return clamp(value, 1, 4); });
+    }
+
+    var fde14 = source.fde14 && typeof source.fde14 === "object" ? source.fde14 : {};
+    base.fde14.completedDays = uniqueIntegers(fde14.completedDays, 1, 14);
+    var gateCount = DATA.fde14 && DATA.fde14.config && Array.isArray(DATA.fde14.config.finalGates)
+      ? DATA.fde14.config.finalGates.length
+      : 20;
+    base.fde14.finalGates = uniqueIntegers(fde14.finalGates, 0, Math.max(0, gateCount - 1));
+    if (Array.isArray(fde14.scores) && fde14.scores.length === 2) {
+      base.fde14.scores = fde14.scores.map(function (value) { return clamp(value, 0, 100); });
+    }
+    return base;
+  }
+
+  function storageGet() {
+    try {
+      var probe = "__fde_offline_probe__";
+      window.localStorage.setItem(probe, "1");
+      window.localStorage.removeItem(probe);
+      return window.localStorage.getItem(STORAGE_KEY);
+    } catch {
+      storageAvailable = false;
+      return memoryValue;
+    }
+  }
+
+  function storageSet(value) {
+    memoryValue = value;
+    if (!storageAvailable) return false;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, value);
+      return true;
+    } catch {
+      storageAvailable = false;
+      elements.storageWarning.hidden = false;
+      return false;
+    }
+  }
+
+  function loadState() {
+    var stored = storageGet();
+    elements.storageWarning.hidden = storageAvailable;
+    if (!stored) return defaultState();
+    try {
+      return normalizeState(JSON.parse(stored));
+    } catch {
+      showStatus("本地进度无法读取，已使用空白进度；原内容未被执行。", true);
+      return defaultState();
+    }
+  }
+
+  var state = loadState();
+
+  function saveState(message) {
+    state.route = currentRoute();
+    var saved = storageSet(JSON.stringify(state));
+    if (message) showStatus(saved ? message : message + "（当前仅保存在本次页面内，请及时导出）", !saved);
+  }
+
+  function showStatus(message, isError) {
+    window.clearTimeout(statusTimer);
+    elements.status.textContent = String(message || "");
+    elements.status.style.background = isError ? "#7b3f32" : "";
+    elements.status.classList.add("show");
+    statusTimer = window.setTimeout(function () {
+      elements.status.classList.remove("show");
+    }, 3200);
+  }
+
+  function parsedHash() {
+    var match = String(window.location.hash || "").replace(/^#\/?/, "").match(/^(fde-90|fde-14)(?:\/day-(\d+))?$/);
+    return {
+      route: match ? match[1] : ROUTES.indexOf(state.route) >= 0 ? state.route : "fde-90",
+      day: match && match[2] ? Number(match[2]) : null,
+    };
+  }
+
+  function currentRoute() {
+    return parsedHash().route;
+  }
+
+  function courseDays(route) {
+    return route === "fde-14" ? (DATA.fde14 && DATA.fde14.days || []) : (DATA.fde90 && DATA.fde90.days || []);
+  }
+
+  function setCourse(route) {
+    if (ROUTES.indexOf(route) < 0) return;
+    closeMenu();
+    elements.search.value = "";
+    if (currentRoute() === route && renderedRoute === route) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    window.location.hash = HASH_ROUTES[route].slice(1);
+  }
+
+  function stageId(day, stage) {
+    return String(day) + ":" + stage;
+  }
+
+  function hasStage(day, stage) {
+    return state.fde90.stages.indexOf(stageId(day, stage)) >= 0;
+  }
+
+  function isFde90DayComplete(day) {
+    return STAGE_KEYS.every(function (stage) { return hasStage(day, stage); });
+  }
+
+  function arrayToggle(array, value) {
+    var index = array.indexOf(value);
+    if (index >= 0) array.splice(index, 1);
+    else array.push(value);
+  }
+
+  function list(items, ordered) {
+    if (!Array.isArray(items) || !items.length) return "";
+    var tag = ordered ? "ol" : "ul";
+    return "<" + tag + ">" + items.map(function (item) {
+      return "<li>" + escapeHtml(item) + "</li>";
+    }).join("") + "</" + tag + ">";
+  }
+
+  function details(title, number, body) {
+    return '<details><summary><span class="num">' + escapeHtml(number) + '</span><span>' + escapeHtml(title) + '</span><span class="plus">＋</span></summary><div class="detail-body">' + body + "</div></details>";
+  }
+
+  function courseChoice(activeRoute) {
+    return '<section class="intro-card gold"><p class="section-kicker">CHOOSE BY CURRENT ABILITY · NOT BY AVAILABLE TIME</p><h2>现在该选 90 天，还是直接进入 14 天？</h2><p>用下面四项做一次诚实的现场检查。若其中至少两项只是“听得懂、讲得出”，但离开现成答案就做不出来，先选 90 天；如果已经达到目标 JD 的最低 Gate，就直接进入 14 天，并在投递中继续补课。</p><div class="mini-grid"><article><b>01 · 讲清系统</b><p>不看稿解释用户工作流、架构、数据流与取舍。</p></article><article><b>02 · 跑通定位</b><p>能启动关键链路，找到入口、日志和两个失败路径。</p></article><article><b>03 · 小改验证</b><p>借助 AI 完成小改、测试、回归与回滚，不止复述代码。</p></article><article><b>04 · 陌生迁移</b><p>面对新客户能做发现、范围、Eval、采用与下一步。</p></article></div><div class="stage-row"><button type="button" data-course-card="fde-90" class="' + (activeRoute === "fde-90" ? "checked" : "") + '">两项以上做不出：90 天系统训练</button><button type="button" data-course-card="fde-14" class="' + (activeRoute === "fde-14" ? "checked" : "") + '">已过目标 JD 最低 Gate：14 天边投边练</button><button type="button" data-action="show-choice-help">判断原则：能力不足不等于停止投递</button></div></section>';
+  }
+
+  function renderFde90Day(day) {
+    var evidence = String(state.fde90.evidence[day.day] || "");
+    var understood = hasStage(day.day, "understand");
+    var built = hasStage(day.day, "build");
+    var stageButtons = STAGE_KEYS.map(function (stage) {
+      var checked = hasStage(day.day, stage);
+      var locked = stage === "build" ? !understood || !evidence.trim() : stage === "transfer" ? !built || !evidence.trim() : false;
+      return '<button type="button" data-stage="' + escapeHtml(stage) + '" data-day="' + escapeHtml(day.day) + '" class="' + (checked ? "checked" : "") + '" ' + (locked ? "disabled" : "") + '><span>' + (checked ? "✓ " : locked ? "🔒 " : "○ ") + '</span>' + escapeHtml(STAGE_LABELS[stage]) + "</button>";
+    }).join("");
+    var body1 = "<p>" + escapeHtml(day.standard) + '</p><div class="aside"><b>为什么学</b>' + escapeHtml(day.why) + "</div>";
+    var body2 = "<p>" + escapeHtml(day.practice) + '</p><div class="aside"><b>预期输出</b>' + escapeHtml(day.expected) + "</div>";
+    var body3 = '<div class="aside failure"><b>故意失败一次</b>' + escapeHtml(day.failure) + '</div><div class="aside"><b>迁移到个人项目</b>' + escapeHtml(day.transfer) + "</div>";
+    var body4 = "<p>" + escapeHtml(day.gate) + '</p><label class="evidence"><span>本地证据记录（文件、命令、录音、评分或决策）</span><textarea data-evidence-day="' + escapeHtml(day.day) + '" placeholder="写下可复核的证据；内容只保存在当前浏览器。"></textarea></label>';
+    return '<article class="day-card searchable-day" id="day-' + escapeHtml(day.day) + '" data-day="' + escapeHtml(day.day) + '"><div class="day-title"><h3>Day ' + String(day.day).padStart(2, "0") + "｜" + escapeHtml(day.title) + '</h3><span>三级证据</span></div><p class="day-why">' + escapeHtml(day.why) + '</p><div class="details-grid">' + details("最少知识与标准答案", "01", body1) + details("跟做练习与预期输出", "02", body2) + details("故意失败与项目迁移", "03", body3) + details("证据记录与客观 Gate", "04", body4) + '</div><div class="stage-row">' + stageButtons + "</div></article>";
+  }
+
+  function renderFde90() {
+    var course = DATA.fde90 || {};
+    var weeks = Array.isArray(course.weeks) ? course.weeks : [];
+    var days = Array.isArray(course.days) ? course.days : [];
+    var fourC = Array.isArray(course.fourC) ? course.fourC : [];
+    var steps = Array.isArray(course.steps) ? course.steps : [];
+    var abilities = Array.isArray(course.abilities) ? course.abilities : [];
+    var gateText = state.fde90.gate0 ? "✓ 项目口径已整理；之后按变化更新" : "确认：项目口径只整理一次，不是背诵任务";
+    var html = '<section class="hero"><p class="kicker">AI FDE · 13 WEEKS · 90 DAYS</p><h1>不是背项目，<br>是学会交付结果</h1><p>从最小工单闭环出发，逐步完成客户发现、代码交付、企业 RAG、Agent/HITL、Eval、生产化、试点采用与产品化回流，再把方法迁移到 Job Agent 和华丰。</p><div class="hero-meta"><div><b>90</b><span>天系统训练</span></div><div><b>4C</b><span>统一能力骨架</span></div><div><b>8D</b><span>证据化能力评分</span></div></div></section>';
+    html += courseChoice("fde-90");
+    html += '<section class="intro-card"><p class="section-kicker">GATE 0 · ONCE, NOT DAILY</p><h2>项目口径只整理一次，不是每天背数字</h2><p>Job Agent 可以作为你的完整项目来讲。一次性整理的目的，是把“我拥有并理解这个项目”变成面试时可以展开、追问时可以验证的结构；项目、表述或证据变化时再更新。</p><div class="mini-grid"><article><b>项目归属</b><p>完整说明项目解决的问题、现状、架构、功能和演进。</p></article><article><b>系统理解</b><p>解释关键设计、数据流、边界、取舍和失败路径。</p></article><article><b>可复现能力</b><p>能找到入口、运行链路、小改、测试并恢复现场。</p></article><article><b>历史动作</b><p>准确说出当时亲自做过的判断、实现、验证与协作。</p></article></div><div class="guide"><b>只选 3–5 个核心数字，用“数字 → 判断 → 动作”来讲</b><ol><li>数字：口径是什么，去哪里快速查到？</li><li>判断：这个数字说明了什么问题、质量或阶段？</li><li>动作：它促使你保留、修改、停止或继续验证什么？</li></ol></div><button type="button" class="task-toggle ' + (state.fde90.gate0 ? "checked" : "") + '" data-action="gate0">' + escapeHtml(gateText) + "</button></section>";
+    html += '<section class="intro-card gold"><p class="section-kicker">EVERY DAY · OUTCOME FIRST</p><h2>每天真正的第一步：写“今日结果卡”</h2><p>明确今天替谁改变哪一步、要交付什么、正常与失败怎样验收，以及怎样迁移到自己的项目。项目口径只在触发变化时更新。</p></section>';
+    html += '<section class="framework"><p class="section-kicker">01 · ONE FRAMEWORK</p><h2>4C：同一个人对结果闭环负责</h2><div class="framework-grid">' + fourC.map(function (item) {
+      return "<article><b>" + escapeHtml(item[0]) + "</b><p>" + escapeHtml(item[1]) + "</p></article>";
+    }).join("") + "</div></section>";
+    html += '<section class="framework"><p class="section-kicker">02 · DELIVERY LOOP</p><h2>十步交付闭环</h2><div class="step-grid">' + steps.map(function (step, index) {
+      return "<span><b>" + String(index + 1).padStart(2, "0") + "</b>" + escapeHtml(step) + "</span>";
+    }).join("") + "</div></section>";
+    weeks.forEach(function (week) {
+      var weekDays = days.filter(function (day) { return day.day >= week.range[0] && day.day <= week.range[1]; });
+      html += '<section class="week searchable-week" id="week-' + escapeHtml(week.week) + '" data-week="' + escapeHtml(week.week) + '"><header><small>WEEK ' + String(week.week).padStart(2, "0") + " · DAY " + escapeHtml(week.range[0]) + "–" + escapeHtml(week.range[1]) + "</small><h2>" + escapeHtml(week.phase) + "</h2><p>" + escapeHtml(week.subtitle) + '</p></header><div class="week-gate"><b>本周主交付</b><p>' + escapeHtml(week.deliverable) + "</p><b>阶段 Gate</b><p>" + escapeHtml(week.stageGate) + "</p></div>" + weekDays.map(renderFde90Day).join("") + "</section>";
+    });
+    html += '<section class="framework" id="ability"><p class="section-kicker">EIGHT DIMENSIONS</p><h2>八维能力证据等级</h2><div class="mini-grid">' + abilities.map(function (item, index) {
+      var options = [1, 2, 3, 4].map(function (level) {
+        return '<option value="' + level + '" ' + (state.fde90.abilities[index] === level ? "selected" : "") + ">L" + level + "</option>";
+      }).join("");
+      return "<article><b>" + escapeHtml(item[0]) + "</b><p>" + escapeHtml(item[1]) + '</p><label class="evidence"><span>当前等级</span><select data-ability="' + index + '">' + options + "</select></label></article>";
+    }).join("") + "</div></section>";
+    elements.content.innerHTML = html;
+    elements.content.querySelectorAll("textarea[data-evidence-day]").forEach(function (textarea) {
+      textarea.value = String(state.fde90.evidence[Number(textarea.getAttribute("data-evidence-day"))] || "");
+    });
+  }
+
+  function sprintDetail(title, number, text, materials, guideItems) {
+    var body = "<p>" + escapeHtml(text) + "</p>";
+    if (Array.isArray(guideItems) && guideItems.length) body += list(guideItems, false);
+    if (Array.isArray(materials) && materials.length) {
+      body += '<div class="materials">' + materials.map(function (path) { return "<code>" + escapeHtml(path) + "</code>"; }).join("") + "</div>";
+    }
+    return details(title, number, body);
+  }
+
+  function renderFde14Day(day) {
+    var done = state.fde14.completedDays.indexOf(day.day) >= 0;
+    var guideBody = "<p>" + escapeHtml(day.focus) + "</p>" + list(day.framework, false);
+    (day.guides || []).forEach(function (guide) {
+      guideBody += '<div class="guide"><b>' + escapeHtml(guide.title) + "</b>" + list(guide.steps, true) + "</div>";
+    });
+    var deliveryBody = list(day.deliverables, false) + '<div class="aside"><b>验收 Gate</b>' + escapeHtml(day.acceptance) + "</div>";
+    return '<section class="sprint-day searchable-week" data-week="' + (day.day <= 7 ? "1" : "2") + '"><article class="day-card searchable-day" id="day-' + escapeHtml(day.day) + '" data-day="' + escapeHtml(day.day) + '"><div class="day-title"><h3>Day ' + String(day.day).padStart(2, "0") + "｜" + escapeHtml(day.title) + '</h3><span>' + escapeHtml(day.hours) + '</span></div><p class="day-why">' + escapeHtml(day.focus) + '</p><div class="details-grid">' + details("今日目标与判断框架", "01", guideBody) + sprintDetail("上午主项", "02", day.morning, day.materials) + sprintDetail("下午副项", "03", day.afternoon, day.materials) + sprintDetail("晚间投递 / 复盘", "04", day.evening, day.materials) + details("交付物与验收", "05", deliveryBody) + '</div><button type="button" class="task-toggle ' + (done ? "checked" : "") + '" data-action="toggle-day" data-day="' + escapeHtml(day.day) + '">' + (done ? "✓ 今日已完成" : "标记 Day " + escapeHtml(day.day) + " 为完成") + "</button></article></section>";
+  }
+
+  function renderFde14() {
+    var course = DATA.fde14 || {};
+    var config = course.config || {};
+    var days = Array.isArray(course.days) ? course.days : [];
+    var weeks = Array.isArray(config.weeks) ? config.weeks : [];
+    var heroTitle = Array.isArray(config.heroTitle) ? config.heroTitle : ["AI FDE", "14 天面试冲刺"];
+    var html = '<section class="hero"><p class="kicker">AI FDE · INTERVIEW SPRINT · 14 DAYS</p><h1>' + heroTitle.map(escapeHtml).join("<br>") + '</h1><p>' + escapeHtml(config.lead) + '</p><div class="hero-meta"><div><b>14</b><span>天面试冲刺</span></div><div><b>2</b><span>套项目叙事</span></div><div><b>6–8h</b><span>每日投入</span></div></div></section>';
+    html += courseChoice("fde-14");
+    html += '<section class="intro-card"><p class="section-kicker">COURSE POSITIONING</p><h2>Job Agent 是你的项目，可以讲完整系统</h2><p>14 天课不是“事实防守”，也不是要求你只讲亲手敲出的代码。你可以完整讲用户问题、工作流、架构、模块、指标、取舍和演进；同时把“我对系统的完整理解”与“我当时亲自完成的动作”讲清。冲刺真正训练的是：面试官追问时，你能现场定位、解释、验证和做出小改，而不是机械背诵数字。</p></section>';
+    html += '<section class="intro-card gold"><p class="section-kicker">ROLE CALIBRATION</p><h2>' + escapeHtml(config.definitionTitle) + '</h2><p>' + escapeHtml(config.definitionText) + " <b>" + escapeHtml(config.definitionStrong) + '</b></p><div class="mini-grid">' + (config.definitionPairs || []).map(function (item) { return "<article><b>" + escapeHtml(item[0]) + "</b><p>" + escapeHtml(item[1]) + "</p></article>"; }).join("") + "</div></section>";
+    html += '<section class="framework"><p class="section-kicker">PROJECT LENSES</p><h2>两套项目叙事</h2><div class="framework-grid">' + (config.narratives || []).map(function (item) {
+      return "<article><b>" + escapeHtml(item.tag) + "</b><h3>" + escapeHtml(item.title) + "</h3><p>" + escapeHtml(item.text) + "</p></article>";
+    }).join("") + "</div></section>";
+    weeks.forEach(function (week, index) {
+      var weekDays = days.filter(function (day) { return day.day >= week.range[0] && day.day <= week.range[1]; });
+      html += '<section class="week" id="week-' + (index + 1) + '"><header><small>' + escapeHtml(week.label) + " · DAY " + escapeHtml(week.range[0]) + "–" + escapeHtml(week.range[1]) + "</small><h2>" + escapeHtml(week.theme) + "</h2><p>每天把学习转成文件、口述、Mock、查询或真实投递记录。</p></header>" + weekDays.map(renderFde14Day).join("") + "</section>";
+    });
+    html += '<section class="framework"><p class="section-kicker">WEEKLY SCORE</p><h2>双周计分</h2><div class="mini-grid">' + [0, 1].map(function (index) {
+      return '<article><b>第 ' + (index + 1) + ' 周</b><p>0–100 分；85 分以上可继续主投。</p><label class="evidence"><span>周总分</span><input type="number" min="0" max="100" value="' + escapeHtml(state.fde14.scores[index]) + '" data-score="' + index + '"></label></article>';
+    }).join("") + "</div></section>";
+    html += '<section class="framework"><p class="section-kicker">FINAL GATE</p><h2>最终投递 Gate</h2><div class="details-grid">' + (config.finalGates || []).map(function (gate, index) {
+      var checked = state.fde14.finalGates.indexOf(index) >= 0;
+      return '<button type="button" class="task-toggle ' + (checked ? "checked" : "") + '" data-action="final-gate" data-gate="' + index + '">' + (checked ? "✓ " : "○ ") + escapeHtml(gate) + "</button>";
+    }).join("") + "</div></section>";
+    html += '<section class="framework"><p class="section-kicker">MATERIAL INDEX</p><h2>材料索引</h2><div class="details-grid">' + (config.materials || []).map(function (item) {
+      return '<div class="guide"><b>' + escapeHtml(item[0]) + '</b><div class="materials"><code>' + escapeHtml(item[1]) + "</code></div></div>";
+    }).join("") + "</div></section>";
+    if (config.fallback) {
+      html += '<section class="intro-card gold"><p class="section-kicker">ONE-WEEK FALLBACK</p><h2>只剩 7 天时</h2><p>' + escapeHtml(config.fallback.order) + '</p><div class="mini-grid">' + (config.fallback.cards || []).map(function (item) { return "<article><b>" + escapeHtml(item[0]) + "</b><p>" + escapeHtml(item[1]) + "</p></article>"; }).join("") + "</div></section>";
+    }
+    elements.content.innerHTML = html;
+  }
+
+  function renderNavigation(route) {
+    var html = "";
+    if (route === "fde-90") {
+      var weeks = DATA.fde90 && DATA.fde90.weeks || [];
+      var days = DATA.fde90 && DATA.fde90.days || [];
+      weeks.forEach(function (week) {
+        html += '<div class="nav-group"><b>WEEK ' + String(week.week).padStart(2, "0") + " · " + escapeHtml(week.phase) + "</b>";
+        days.filter(function (day) { return day.day >= week.range[0] && day.day <= week.range[1]; }).forEach(function (day) {
+          html += '<button type="button" data-jump="' + escapeHtml(day.day) + '" class="' + (isFde90DayComplete(day.day) ? "done" : "") + '">Day ' + String(day.day).padStart(2, "0") + " · " + escapeHtml(day.title) + "</button>";
+        });
+        html += "</div>";
+      });
+    } else {
+      var config = DATA.fde14 && DATA.fde14.config || {};
+      var sprintDays = DATA.fde14 && DATA.fde14.days || [];
+      (config.weeks || []).forEach(function (week) {
+        html += '<div class="nav-group"><b>' + escapeHtml(week.label) + " · " + escapeHtml(week.theme) + "</b>";
+        sprintDays.filter(function (day) { return day.day >= week.range[0] && day.day <= week.range[1]; }).forEach(function (day) {
+          html += '<button type="button" data-jump="' + escapeHtml(day.day) + '" class="' + (state.fde14.completedDays.indexOf(day.day) >= 0 ? "done" : "") + '">Day ' + String(day.day).padStart(2, "0") + " · " + escapeHtml(day.title) + "</button>";
+        });
+        html += "</div>";
+      });
+    }
+    elements.dayNav.innerHTML = html;
+  }
+
+  function updateCourseButtons(route) {
+    document.querySelectorAll("[data-course]").forEach(function (button) {
+      var active = button.getAttribute("data-course") === route;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  function updateProgress() {
+    var route = currentRoute();
+    if (route === "fde-90") {
+      var completed = (DATA.fde90 && DATA.fde90.days || []).filter(function (day) { return isFde90DayComplete(day.day); }).length;
+      elements.progressLabel.textContent = "完成天数 · 三级证据";
+      elements.progressValue.textContent = completed + " / 90 · " + state.fde90.stages.length + " / 270";
+      elements.progressBar.style.width = ((state.fde90.stages.length / 270) * 100).toFixed(2) + "%";
+    } else {
+      elements.progressLabel.textContent = "已完成冲刺天数";
+      elements.progressValue.textContent = state.fde14.completedDays.length + " / 14";
+      elements.progressBar.style.width = ((state.fde14.completedDays.length / 14) * 100).toFixed(2) + "%";
+    }
+  }
+
+  function updateNavigationDone() {
+    elements.dayNav.querySelectorAll("button[data-jump]").forEach(function (button) {
+      var day = Number(button.getAttribute("data-jump"));
+      var done = currentRoute() === "fde-90" ? isFde90DayComplete(day) : state.fde14.completedDays.indexOf(day) >= 0;
+      button.classList.toggle("done", done);
+    });
+  }
+
+  function render() {
+    var route = currentRoute();
+    renderedRoute = route;
+    state.route = route;
+    elements.brand.textContent = route === "fde-90" ? "90" : "14";
+    elements.search.placeholder = route === "fde-90" ? "搜索能力、练习、失败路径…" : "搜索任务、证据、深挖题…";
+    elements.search.value = "";
+    elements.searchCount.textContent = "";
+    updateCourseButtons(route);
+    if (route === "fde-90") renderFde90();
+    else renderFde14();
+    renderNavigation(route);
+    updateProgress();
+    applyTheme();
+    elements.expandAll.textContent = "全部展开";
+    document.title = route === "fde-90" ? "AI FDE 90 天系统训练 · 独立静态版" : "AI FDE 14 天面试冲刺 · 独立静态版";
+    storageSet(JSON.stringify(state));
+  }
+
+  function applyTheme() {
+    elements.app.setAttribute("data-theme", state.theme);
+    elements.theme.textContent = state.theme === "light" ? "夜" : "日";
+    elements.theme.setAttribute("aria-label", state.theme === "light" ? "切换到深色主题" : "切换到浅色主题");
+  }
+
+  function closeMenu() {
+    elements.sidebar.classList.remove("open");
+    elements.menuScrim.classList.remove("show");
+  }
+
+  function openMenu() {
+    elements.sidebar.classList.add("open");
+    elements.menuScrim.classList.add("show");
+  }
+
+  function jumpToDay(day, updateHash) {
+    var maximum = currentRoute() === "fde-90" ? 90 : 14;
+    if (!Number.isInteger(day) || day < 1 || day > maximum) return;
+    var target = document.getElementById("day-" + day);
+    if (!target) return;
+    closeMenu();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (updateHash) {
+      try {
+        window.history.replaceState(null, "", HASH_ROUTES[currentRoute()] + "/day-" + day);
+      } catch {
+        // The course remains fully usable if a file URL browser rejects History API changes.
+      }
+    }
+  }
+
+  function searchableText(day) {
+    if (currentRoute() === "fde-90") {
+      return Object.keys(day).map(function (key) { return day[key]; }).join(" ").toLowerCase();
+    }
+    return [day.title, day.hours, day.focus, day.morning, day.afternoon, day.evening, day.acceptance]
+      .concat(day.deliverables || [], day.materials || [], day.framework || [])
+      .concat((day.guides || []).reduce(function (all, guide) { return all.concat(guide.title, guide.steps || []); }, []))
+      .join(" ").toLowerCase();
+  }
+
+  function applySearch() {
+    var query = elements.search.value.trim().toLowerCase();
+    var dayMap = new Map(courseDays(currentRoute()).map(function (day) { return [day.day, day]; }));
+    var visible = 0;
+    elements.content.querySelectorAll(".searchable-day").forEach(function (card) {
+      var day = Number(card.getAttribute("data-day"));
+      var match = !query || searchableText(dayMap.get(day) || {}).indexOf(query) >= 0;
+      card.hidden = !match;
+      if (match) visible += 1;
+    });
+    elements.content.querySelectorAll(".searchable-week").forEach(function (week) {
+      var cards = Array.from(week.querySelectorAll(".searchable-day"));
+      if (cards.length) week.hidden = cards.every(function (card) { return card.hidden; });
+    });
+    elements.searchCount.textContent = query ? visible + " 个 Day" : "";
+  }
+
+  function updateStageButtons(day) {
+    var evidence = String(state.fde90.evidence[day] || "").trim();
+    var understood = hasStage(day, "understand");
+    var built = hasStage(day, "build");
+    elements.content.querySelectorAll('button[data-stage][data-day="' + day + '"]').forEach(function (button) {
+      var stage = button.getAttribute("data-stage");
+      var checked = hasStage(day, stage);
+      var locked = stage === "build" ? !understood || !evidence : stage === "transfer" ? !built || !evidence : false;
+      button.disabled = locked;
+      button.classList.toggle("checked", checked);
+      button.innerHTML = "<span>" + (checked ? "✓ " : locked ? "🔒 " : "○ ") + "</span>" + escapeHtml(STAGE_LABELS[stage]);
+    });
+  }
+
+  function toggleStage(day, stage) {
+    if (STAGE_KEYS.indexOf(stage) < 0 || day < 1 || day > 90) return;
+    var id = stageId(day, stage);
+    var evidence = String(state.fde90.evidence[day] || "").trim();
+    if (stage === "build" && (!hasStage(day, "understand") || !evidence)) return;
+    if (stage === "transfer" && (!hasStage(day, "build") || !evidence)) return;
+    if (state.fde90.stages.indexOf(id) >= 0) {
+      state.fde90.stages = state.fde90.stages.filter(function (item) {
+        if (item === id) return false;
+        if (stage === "understand" && (item === stageId(day, "build") || item === stageId(day, "transfer"))) return false;
+        if (stage === "build" && item === stageId(day, "transfer")) return false;
+        return true;
+      });
+    } else {
+      state.fde90.stages.push(id);
+      state.fde90.stages.sort();
+    }
+    updateStageButtons(day);
+    updateProgress();
+    updateNavigationDone();
+    saveState(STAGE_LABELS[stage] + "进度已更新");
+  }
+
+  function download(content, filename, type) {
+    try {
+      var blob = new Blob([content], { type: type });
+      var url = window.URL.createObjectURL(blob);
+      var anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(function () { window.URL.revokeObjectURL(url); }, 1000);
+      showStatus("已生成 " + filename);
+    } catch {
+      showStatus("当前浏览器无法生成下载文件，请换用 Chrome 或 Safari。", true);
+    }
+  }
+
+  function exportPayload() {
+    return {
+      schema: "ai-fde-standalone-progress",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      generatedFrom: DATA.generatedAt || null,
+      storagePartitions: STORAGE_PARTITIONS,
+      state: normalizeState(state),
+    };
+  }
+
+  function exportJson() {
+    download(JSON.stringify(exportPayload(), null, 2), "AI-FDE学习进度.json", "application/json;charset=utf-8");
+  }
+
+  function exportMarkdown() {
+    var now = new Date().toISOString();
+    var lines = ["# AI FDE 学习进度", "", "- 导出时间：" + now, "- 当前课程：" + (currentRoute() === "fde-90" ? "90 天系统训练" : "14 天面试冲刺"), ""];
+    if (currentRoute() === "fde-90") {
+      var completed = courseDays("fde-90").filter(function (day) { return isFde90DayComplete(day.day); }).length;
+      lines.push("- Gate 0：" + (state.fde90.gate0 ? "已确认" : "未确认"), "- 完成天数：" + completed + " / 90", "- 三级进度：" + state.fde90.stages.length + " / 270", "", "## 每日证据", "");
+      courseDays("fde-90").forEach(function (day) {
+        lines.push("### Day " + day.day + "｜" + day.title);
+        lines.push("- 进度：解释 " + (hasStage(day.day, "understand") ? "✓" : "○") + " / 实作 " + (hasStage(day.day, "build") ? "✓" : "○") + " / 迁移 " + (hasStage(day.day, "transfer") ? "✓" : "○"));
+        lines.push("- 证据：" + (state.fde90.evidence[day.day] || "未填写"), "");
+      });
+      lines.push("## 八维能力", "");
+      (DATA.fde90.abilities || []).forEach(function (ability, index) { lines.push("- " + ability[0] + "：L" + state.fde90.abilities[index]); });
+    } else {
+      lines.push("- 完成天数：" + state.fde14.completedDays.length + " / 14", "- 第一周得分：" + state.fde14.scores[0], "- 第二周得分：" + state.fde14.scores[1], "", "## 每日进度", "");
+      courseDays("fde-14").forEach(function (day) { lines.push("- " + (state.fde14.completedDays.indexOf(day.day) >= 0 ? "[x]" : "[ ]") + " Day " + day.day + "｜" + day.title); });
+      lines.push("", "## 最终投递 Gate", "");
+      (DATA.fde14.config.finalGates || []).forEach(function (gate, index) { lines.push("- " + (state.fde14.finalGates.indexOf(index) >= 0 ? "[x]" : "[ ]") + " " + gate); });
+    }
+    download(lines.join("\n"), "AI-FDE学习进度.md", "text/markdown;charset=utf-8");
+  }
+
+  function importPublicFde90(payload) {
+    var imported = normalizeState(state);
+    imported.route = "fde-90";
+    imported.fde90 = defaultState().fde90;
+    imported.fde90.gate0 = payload.gate0 === true;
+    if (payload.abilities && typeof payload.abilities === "object") {
+      imported.fde90.abilities = (DATA.fde90.abilities || []).map(function (ability) { return clamp(payload.abilities[ability[0]], 1, 4); });
+    }
+    (payload.days || []).forEach(function (day) {
+      var number = Number(day.day);
+      if (!Number.isInteger(number) || number < 1 || number > 90) return;
+      STAGE_KEYS.forEach(function (stage) { if (day[stage] === true) imported.fde90.stages.push(stageId(number, stage)); });
+      if (typeof day.evidence === "string") imported.fde90.evidence[number] = day.evidence.slice(0, 50000);
+    });
+    return normalizeState(imported);
+  }
+
+  function parseImportedState(payload) {
+    if (!payload || typeof payload !== "object") throw new Error("JSON 顶层必须是对象");
+    if (payload.schema === "ai-fde-standalone-progress" && payload.state) return normalizeState(payload.state);
+    if (payload.state && (payload.state.fde90 || payload.state.fde14)) return normalizeState(payload.state);
+    if (payload.fde90 || payload.fde14) return normalizeState(payload);
+    if (Array.isArray(payload.days) && payload.days.some(function (day) { return day && Object.prototype.hasOwnProperty.call(day, "understand"); })) return importPublicFde90(payload);
+    throw new Error("无法识别此进度文件格式");
+  }
+
+  function handleImport(file) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showStatus("进度文件超过 5MB，已拒绝读取。", true);
+      return;
+    }
+    var reader = new FileReader();
+    reader.onerror = function () { showStatus("进度文件读取失败。", true); };
+    reader.onload = function () {
+      try {
+        var imported = parseImportedState(JSON.parse(String(reader.result || "")));
+        if (!window.confirm("导入将覆盖当前本地进度。是否继续？")) return;
+        state = imported;
+        saveState("进度导入成功");
+        var targetHash = HASH_ROUTES[state.route];
+        if (window.location.hash === targetHash) render();
+        else window.location.hash = targetHash.slice(1);
+        window.scrollTo({ top: 0 });
+      } catch (error) {
+        showStatus("导入失败：" + (error instanceof Error ? error.message : "JSON 格式错误"), true);
+      } finally {
+        elements.importFile.value = "";
+      }
+    };
+    reader.readAsText(file, "utf-8");
+  }
+
+  function printCourse() {
+    var records = Array.from(elements.content.querySelectorAll("details")).map(function (detail) { return detail.open; });
+    elements.content.querySelectorAll("details").forEach(function (detail) { detail.open = true; });
+    window.print();
+    window.setTimeout(function () {
+      elements.content.querySelectorAll("details").forEach(function (detail, index) { detail.open = records[index]; });
+    }, 0);
+  }
+
+  function updateReadingProgress() {
+    scrollFrame = 0;
+    var maximum = document.documentElement.scrollHeight - window.innerHeight;
+    var percentage = maximum > 0 ? Math.max(0, Math.min(100, window.scrollY / maximum * 100)) : 0;
+    elements.readingLine.style.width = percentage.toFixed(2) + "%";
+    var activeDay = null;
+    elements.content.querySelectorAll(".searchable-day:not([hidden])").forEach(function (card) {
+      if (card.getBoundingClientRect().top <= 145) activeDay = Number(card.getAttribute("data-day"));
+    });
+    elements.dayNav.querySelectorAll("button[data-jump]").forEach(function (button) {
+      button.setAttribute("aria-current", Number(button.getAttribute("data-jump")) === activeDay ? "true" : "false");
+    });
+  }
+
+  document.querySelectorAll("[data-course]").forEach(function (button) {
+    button.addEventListener("click", function () { setCourse(button.getAttribute("data-course")); });
+  });
+  elements.menuOpen.addEventListener("click", openMenu);
+  elements.menuClose.addEventListener("click", closeMenu);
+  elements.menuScrim.addEventListener("click", closeMenu);
+  elements.dayNav.addEventListener("click", function (event) {
+    var button = event.target.closest("button[data-jump]");
+    if (button) jumpToDay(Number(button.getAttribute("data-jump")), true);
+  });
+  elements.content.addEventListener("click", function (event) {
+    var stageButton = event.target.closest("button[data-stage]");
+    if (stageButton) {
+      toggleStage(Number(stageButton.getAttribute("data-day")), stageButton.getAttribute("data-stage"));
+      return;
+    }
+    var courseButton = event.target.closest("button[data-course-card]");
+    if (courseButton) {
+      setCourse(courseButton.getAttribute("data-course-card"));
+      return;
+    }
+    var actionButton = event.target.closest("button[data-action]");
+    if (!actionButton) return;
+    var action = actionButton.getAttribute("data-action");
+    if (action === "gate0") {
+      state.fde90.gate0 = !state.fde90.gate0;
+      actionButton.classList.toggle("checked", state.fde90.gate0);
+      actionButton.textContent = state.fde90.gate0 ? "✓ 项目口径已整理；之后按变化更新" : "确认：项目口径只整理一次，不是背诵任务";
+      saveState("Gate 0 状态已更新");
+    } else if (action === "show-choice-help") {
+      showStatus("达到目标 JD 最低 Gate 就开始投递；90 天课程可与真实投递并行推进。", false);
+    } else if (action === "toggle-day") {
+      var day = Number(actionButton.getAttribute("data-day"));
+      arrayToggle(state.fde14.completedDays, day);
+      state.fde14.completedDays.sort(function (left, right) { return left - right; });
+      var done = state.fde14.completedDays.indexOf(day) >= 0;
+      actionButton.classList.toggle("checked", done);
+      actionButton.textContent = done ? "✓ 今日已完成" : "标记 Day " + day + " 为完成";
+      updateProgress();
+      updateNavigationDone();
+      saveState("Day " + day + " 进度已更新");
+    } else if (action === "final-gate") {
+      var gate = Number(actionButton.getAttribute("data-gate"));
+      arrayToggle(state.fde14.finalGates, gate);
+      state.fde14.finalGates.sort(function (left, right) { return left - right; });
+      var checked = state.fde14.finalGates.indexOf(gate) >= 0;
+      actionButton.classList.toggle("checked", checked);
+      var gateText = DATA.fde14.config.finalGates[gate] || "投递 Gate";
+      actionButton.textContent = (checked ? "✓ " : "○ ") + gateText;
+      saveState("最终 Gate 已更新");
+    }
+  });
+  elements.content.addEventListener("input", function (event) {
+    var target = event.target;
+    if (target.matches("textarea[data-evidence-day]")) {
+      var day = Number(target.getAttribute("data-evidence-day"));
+      state.fde90.evidence[day] = String(target.value).slice(0, 50000);
+      updateStageButtons(day);
+      saveState();
+    } else if (target.matches("select[data-ability]")) {
+      var ability = Number(target.getAttribute("data-ability"));
+      state.fde90.abilities[ability] = clamp(target.value, 1, 4);
+      saveState("能力等级已更新");
+    } else if (target.matches("input[data-score]")) {
+      var score = Number(target.getAttribute("data-score"));
+      state.fde14.scores[score] = clamp(target.value, 0, 100);
+      target.value = state.fde14.scores[score];
+      saveState();
+    }
+  });
+  elements.search.addEventListener("input", applySearch);
+  elements.expandAll.addEventListener("click", function () {
+    var visibleDetails = Array.from(elements.content.querySelectorAll("details")).filter(function (detail) { return !detail.closest("[hidden]"); });
+    var shouldOpen = visibleDetails.some(function (detail) { return !detail.open; });
+    visibleDetails.forEach(function (detail) { detail.open = shouldOpen; });
+    elements.expandAll.textContent = shouldOpen ? "全部收起" : "全部展开";
+  });
+  elements.theme.addEventListener("click", function () {
+    state.theme = state.theme === "light" ? "dark" : "light";
+    applyTheme();
+    saveState("主题已切换");
+  });
+  elements.exportJson.addEventListener("click", exportJson);
+  elements.exportMd.addEventListener("click", exportMarkdown);
+  elements.importTrigger.addEventListener("click", function () { elements.importFile.click(); });
+  elements.importFile.addEventListener("change", function () { handleImport(elements.importFile.files && elements.importFile.files[0]); });
+  elements.print.addEventListener("click", printCourse);
+  elements.backTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+  window.addEventListener("hashchange", function () {
+    var parsed = parsedHash();
+    var routeChanged = parsed.route !== renderedRoute;
+    if (routeChanged) render();
+    if (parsed.day) window.setTimeout(function () { jumpToDay(parsed.day, false); }, 0);
+    else if (routeChanged) window.scrollTo({ top: 0 });
+  });
+  window.addEventListener("scroll", function () {
+    if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateReadingProgress);
+  }, { passive: true });
+  window.addEventListener("keydown", function (event) {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      elements.search.focus();
+    }
+    if (event.key === "Escape") {
+      closeMenu();
+      elements.search.value = "";
+      applySearch();
+    }
+  });
+
+  var initial = parsedHash();
+  if (!window.location.hash) {
+    try { window.history.replaceState(null, "", HASH_ROUTES[initial.route]); } catch { /* file URL fallback */ }
+  }
+  render();
+  if (initial.day) window.setTimeout(function () { jumpToDay(initial.day, false); }, 0);
+  updateReadingProgress();
+}());
+</script>
+</body>
+</html>
